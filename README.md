@@ -36,6 +36,8 @@ surligné en orange ; les bâtiments « poussent » pendant la descente.
 - Trajectoire : tableaux `PATH_WIDE` (écran large) et `PATH_TALL` (portrait) en tête de
   `js/campus3d.js` — une ligne par étape : avancement, point visé, distance, inclinaison, cap.
 - Annotations manuscrites (rue, entrée, bât. 11, bât. 24) : fonction `buildLabels`.
+- Résistance en fin de vol : `HOLD` (`app.js`, section 3) = part finale du défilement pendant
+  laquelle la vue reste sur le bâtiment 24 ; le défilement s’y accroche (`scroll-snap`, proximité).
 - Sans WebGL 2, l’image `assets/vol-plan.webp` reste affichée.
 
 Pour régénérer les données après une mise à jour d’OpenStreetMap :
@@ -55,6 +57,8 @@ tracée à main levée, graduations manuscrites, marqueurs ● ○ × + △ par 
 annotations fléchées. Les points se réorganisent d’un sujet à l’autre au défilement.
 Les figures sont décrites dans `FIGS` (`app.js`, section 4) ; le champ `shape` de chaque
 conférence dans `data.js` choisit la figure.
+Chaque carte reste épinglée au centre pendant `--dwell` de défilement (`.talk-card` dans
+`style.css`) et le défilement s’accroche au milieu de cette pause.
 
 ## Données
 

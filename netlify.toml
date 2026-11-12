@@ -4,9 +4,8 @@
   command = "sh tools/build.sh"
   publish = "dist"
 
-# En-têtes de sécurité pour toutes les pages.
-# script-src autorise 'unsafe-inline' uniquement pour le badge que Netlify ajoute sur l'offre
-# gratuite (iframe srcdoc avec un script en ligne) ; le site lui-même n'a aucun script en ligne.
+# En-têtes de sécurité pour toutes les pages (le site n'a aucun script en ligne).
+# Si le badge Netlify est réactivé, il faudra ajouter 'unsafe-inline' à script-src.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -14,7 +13,7 @@
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
 
 # Three.js : fichier versionné, mis en cache un an
 [[headers]]

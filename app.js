@@ -214,6 +214,8 @@
   function renderCards() {
     $('#talkCards').innerHTML = DATA.talks.map((k, i) => `
       <li class="talk-card" data-index="${i}" id="projet-${esc(k.id)}">
+        <span class="snap-point" aria-hidden="true"></span>
+        <div class="card-stick">
         <article class="card-inner">
           <div class="card-top">
             <span class="card-num">${pad(i + 1)}</span>
@@ -227,6 +229,7 @@
             ${favButton(k.id)}
           </div>
         </article>
+        </div>
       </li>`).join('');
     observeCards();
   }
@@ -421,11 +424,13 @@
     const sticky = $('.flight-sticky', section);
 
     let target = 0, current = -1, visible = true, raf = 0;
+    const HOLD = 0.16;   // derniers 16 % du défilement : on reste sur le bâtiment 24 (résistance)
 
-    function progress() {
+    function rawProgress() {
       const total = section.offsetHeight - sticky.offsetHeight;
       return clamp(-section.getBoundingClientRect().top / Math.max(1, total), 0, 1);
     }
+    const progress = () => Math.min(1, rawProgress() / (1 - HOLD));
     function paint(p) {
       for (const b of beats) {
         const fade = 0.028;
@@ -440,7 +445,7 @@
         b.el.classList.toggle('on', o > 0.5);
       }
       hint.style.opacity = clamp(1 - p * 14, 0, 1);
-      bar.style.transform = `scaleX(${p.toFixed(4)})`;
+      bar.style.transform = `scaleX(${rawProgress().toFixed(4)})`;
     }
     function tick() {
       raf = 0;
