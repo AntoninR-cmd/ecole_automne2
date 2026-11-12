@@ -1,0 +1,6 @@
+# Dossier généré par tools/build.sh (publié par Netlify)
+dist/
+# Lien local vers le projet Netlify (CLI)
+.netlify/
+# Extraits OpenStreetMap bruts (voir tools/osm_to_campus.py)
+*.osm

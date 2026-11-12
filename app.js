@@ -1,6 +1,6 @@
 /* École d'automne Data Science — scripts du site
  * 1. Textes FR/EN      2. Rendu du contenu     3. Vol (vidéo pilotée par le défilement)
- * 4. Nuage de points 3D 5. Programme (recherche, favoris, calendrier, en cours)  6. Démarrage
+ * 4. Nuage de points 3D dessiné 5. Programme (recherche, favoris, calendrier, en cours)  6. Démarrage
  */
 (function () {
   'use strict';
@@ -69,7 +69,7 @@
       about3: 'Les conférences sont ouvertes à tous, sans inscription.',
       footerFrame: 'Master 2 et spécialisation ingénieur Sciences des données',
       footerFav: 'Vos favoris sont conservés uniquement dans ce navigateur.',
-      footerCredit: 'Vol aérien réalisé avec Google Earth Studio.',
+      footerCredit: 'Campus en 3D dessiné à partir des données © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">contributeurs OpenStreetMap</a>.',
       stageIntro: 'Huit projets',
       and: 'et'
     },
@@ -122,7 +122,7 @@
       about3: 'The talks are open to everyone, with no registration.',
       footerFrame: 'Master’s degree (year 2) and data science engineering specialisation',
       footerFav: 'Your favourites are only stored in this browser.',
-      footerCredit: 'Aerial flight made with Google Earth Studio.',
+      footerCredit: '3D campus drawn from © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> data.',
       stageIntro: 'Eight projects',
       and: 'and'
     }
@@ -319,6 +319,7 @@
     renderThemeOptions();
     renderList();
     cloud && cloud.setLabel(activeIndex);
+    if (window.CampusFlight) window.CampusFlight.setLang(lang);
   }
 
   /* ================= 5. Programme : favoris, filtres, calendrier, en cours ================= */
@@ -409,51 +410,17 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }
 
-  /* ================= 3. Vol : la vidéo suit le défilement ================= */
-  // Courbe temps(défilement) calculée sur le mouvement réel de la vidéo :
-  // chaque portion de défilement produit à peu près le même changement visuel.
-  const CURVE = [0, .061, .123, .184, .244, .303, .361, .418, .473, .528, .583, .638, .693, .748, .803, .858, .911, .964, 1.018, 1.071,
-    1.124, 1.18, 1.235, 1.292, 1.351, 1.411, 1.471, 1.533, 1.596, 1.664, 1.761, 1.881, 1.984, 2.112, 2.217, 2.308, 2.389, 2.463, 2.531, 2.598,
-    2.664, 2.727, 2.786, 2.843, 2.897, 2.95, 2.998, 3.044, 3.178, 3.411, 3.643, 3.875, 4.108, 4.34, 4.572, 4.805, 5.037, 5.27, 5.502, 5.734, 5.94];
-  const curveAt = p => { const x = clamp(p, 0, 1) * (CURVE.length - 1); const i = Math.floor(x); const f = x - i; return CURVE[i] + (CURVE[Math.min(i + 1, CURVE.length - 1)] - CURVE[i]) * f; };
-
+  /* ================= 3. Vol : la maquette 3D suit le défilement ================= */
+  // La scène est dessinée par js/campus3d.js (module) ; ici on calcule l'avancement,
+  // on affiche les textes et on transmet un avancement lissé à window.CampusFlight.
   function initFlight() {
     const section = $('#vol');
-    const video = $('#flightVideo');
-    const poster = $('#flightPoster');
     const beats = $$('.beat', section).map(el => ({ el, from: +el.dataset.from, to: +el.dataset.to }));
     const hint = $('#scrollHint');
     const bar = $('#flightBar');
     const sticky = $('.flight-sticky', section);
 
-    const portrait = window.innerHeight > window.innerWidth * 1.15;
-    const small = Math.max(window.innerWidth, window.innerHeight) <= 1100 || (navigator.connection && navigator.connection.saveData);
-    const src = portrait ? 'assets/video/vol-portrait.mp4' : small ? 'assets/video/vol-720.mp4' : 'assets/video/vol-1080.mp4';
-    if (portrait) poster.src = 'assets/video/poster-debut-portrait.jpg';
-
-    let ready = false, target = 0, current = 0, visible = true, raf = 0;
-
-    const attach = url => {
-      video.src = url;
-      video.load();
-    };
-    video.addEventListener('loadeddata', () => {
-      ready = true;
-      video.pause();
-      video.currentTime = current;
-      video.classList.add('ready');
-      loop();
-    });
-    // Charger la vidéo en mémoire (blob) rend les déplacements dans la vidéo beaucoup plus fiables.
-    if (location.protocol.startsWith('http') && window.fetch) {
-      fetch(src).then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); })
-        .then(b => attach(URL.createObjectURL(b)))
-        .catch(() => attach(src));
-    } else attach(src);
-
-    // Débloque la vidéo sur certains mobiles (iOS) au premier contact
-    const unlock = () => { if (ready) video.play().then(() => video.pause()).catch(() => {}); window.removeEventListener('touchstart', unlock); };
-    window.addEventListener('touchstart', unlock, { passive: true });
+    let target = 0, current = -1, visible = true, raf = 0;
 
     function progress() {
       const total = section.offsetHeight - sticky.offsetHeight;
@@ -461,7 +428,7 @@
     }
     function paint(p) {
       for (const b of beats) {
-        const fade = 0.045;
+        const fade = 0.028;
         let o;
         if (p < b.from) o = b.from === 0 ? 1 : clamp(1 - (b.from - p) / fade, 0, 1);
         else if (p > b.to) o = b.to >= 1 ? 1 : clamp(1 - (p - b.to) / fade, 0, 1);
@@ -472,7 +439,6 @@
         b.el.style.transform = `translateY(${((1 - o) * (p < b.from ? 24 : -24)).toFixed(1)}px)`;
         b.el.classList.toggle('on', o > 0.5);
       }
-      sticky.style.setProperty('--dim', (clamp((p - 0.6) / 0.3, 0, 1) * 0.3).toFixed(3));
       hint.style.opacity = clamp(1 - p * 14, 0, 1);
       bar.style.transform = `scaleX(${p.toFixed(4)})`;
     }
@@ -480,25 +446,28 @@
       raf = 0;
       const p = progress();
       paint(p);
-      target = curveAt(p);
-      if (ready) {
+      target = p;
+      const flight = window.CampusFlight;
+      if (current < 0 || !flight) current = target;
+      else {
         const d = target - current;
-        current = Math.abs(d) < 0.002 ? target : current + d * (reduceMotion ? 1 : 0.2);
-        if (!video.seeking && Math.abs(video.currentTime - current) > 0.012) {
-          try { video.currentTime = current; } catch (e) { /* ignore */ }
-        }
-        if (Math.abs(target - current) > 0.002 || video.seeking) loop();
-      } else current = target;
+        current = Math.abs(d) < 0.0004 ? target : current + d * (reduceMotion ? 1 : 0.14);
+      }
+      if (flight) flight.render(current);
+      if (flight && current !== target) loop();
     }
     function loop() { if (!raf && visible) raf = requestAnimationFrame(tick); }
     window.addEventListener('scroll', loop, { passive: true });
     window.addEventListener('resize', loop);
-    video.addEventListener('seeked', loop);
+    document.addEventListener('campus:ready', loop);
     new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) loop(); }).observe(section);
     tick();
   }
 
-  /* ================= 4. Nuage de points 3D ================= */
+  /* ================= 4. Nuage de points 3D, dessiné à la main ================= */
+  // Un « nuage de points » de carnet : boîte d'axes tracée à main levée, marqueurs manuscrits
+  // (● ○ × + △ ·) par classe, légende, annotations fléchées. Les points se réarrangent
+  // pour dessiner le sujet de chaque conférence.
   function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
 
   // Primitives : chacune renvoie un point [x, y, z] (surface ou volume)
@@ -529,178 +498,275 @@
     };
   }
 
-  // Une forme = liste de [poids, couleur, générateur]. Couleurs : 0 jaune, 1 jaune clair, 2 blanc.
-  const SHAPES = {
-    globe(G) {
-      return [[1, 0, () => G.sphere([0, 0, 0], 1)], [0.25, 2, () => G.ball([0, 0, 0], 0.55)]];
+  // Marqueurs : 0 point plein, 1 rond, 2 croix, 3 plus, 4 triangle, 5 petit point · encres : 0 encre, 1 vert d'eau, 2 orange
+  const INKS = ['#1d2027', '#167a6c', '#e8590c'];
+  const DIMS = { fr: ['dim. 1', 'dim. 2', 'dim. 3'], en: ['dim 1', 'dim 2', 'dim 3'] };
+  const clusterCenter = i => { const a = i / 8 * Math.PI * 2 + 0.35; return [Math.cos(a) * 0.8, Math.sin(a * 2) * 0.32 + (i % 2 ? 0.3 : -0.3), Math.sin(a) * 0.8]; };
+
+  // Une figure = classes (marqueur, encre, légende) + parties [poids, classe, générateur] + annotations
+  const FIGS = {
+    clusters: {
+      fig: { fr: 'huit projets, quatre thèmes', en: 'eight projects, four themes' },
+      classes: [
+        { m: 0, c: 2, fr: 'santé', en: 'health' }, { m: 1, c: 1, fr: 'environnement', en: 'environment' },
+        { m: 2, c: 0, fr: 'agronomie', en: 'agronomy' }, { m: 4, c: 0, fr: 'chimie', en: 'chemistry' }
+      ],
+      parts(G) {
+        const themes = Object.keys(DATA.themes);
+        return DATA.talks.map((k, i) => {
+          const c = clusterCenter(i);
+          return [1, Math.max(0, themes.indexOf(k.theme)), () => [c[0] + G.gauss() * 0.12, c[1] + G.gauss() * 0.12, c[2] + G.gauss() * 0.12]];
+        });
+      },
+      notes: () => DATA.talks.map((k, i) => ({ at: clusterCenter(i), plain: pad(i + 1) }))
     },
-    molecule(G) {
-      const ring = [...Array(6)].map((_, i) => { const a = i * Math.PI / 3 + Math.PI / 6; return [Math.cos(a) * 0.48, Math.sin(a) * 0.48, 0]; });
-      const out = [0, 2, 4].map(i => [ring[i][0] * 1.75, ring[i][1] * 1.75, (i - 2) * 0.12]);
-      const tail = [out[0][0] + 0.38, out[0][1] + 0.3, 0.25];
-      const tail2 = [out[2][0] - 0.05, out[2][1] - 0.42, -0.3];
-      const atoms = [...ring.map(p => [p, 0.15, 0]), ...out.map(p => [p, 0.13, 1]), [tail, 0.11, 2], [tail2, 0.1, 2]];
-      const bonds = [];
-      for (let i = 0; i < 6; i++) bonds.push([ring[i], ring[(i + 1) % 6]]);
-      [0, 2, 4].forEach((ri, j) => bonds.push([ring[ri], out[j]]));
-      bonds.push([out[0], tail], [out[2], tail2]);
-      const list = atoms.map(([c, r, col]) => [r * r * 22, col, () => G.sphere(c, r)]);
-      bonds.forEach(([a, b]) => list.push([0.12, 1, () => G.tube(a, b, 0.025, 0.025)]));
-      return list;
+    molecule: {
+      fig: { fr: 'molécule inconnue', en: 'unknown molecule' },
+      classes: [{ m: 0, c: 2, fr: 'atome du cycle', en: 'ring atom' }, { m: 1, c: 1, fr: 'substituant', en: 'substituent' }, { m: 5, c: 0, fr: 'liaison', en: 'bond' }],
+      parts(G) {
+        const ring = [...Array(6)].map((_, i) => { const a = i * Math.PI / 3 + Math.PI / 6; return [Math.cos(a) * 0.48, Math.sin(a) * 0.48, 0]; });
+        const out = [0, 2, 4].map(i => [ring[i][0] * 1.75, ring[i][1] * 1.75, (i - 2) * 0.12]);
+        const tail = [out[0][0] + 0.38, out[0][1] + 0.3, 0.25];
+        const tail2 = [out[2][0] - 0.05, out[2][1] - 0.42, -0.3];
+        const list = ring.map(c => [0.5, 0, () => G.sphere(c, 0.15)]);
+        out.forEach(c => list.push([0.37, 1, () => G.sphere(c, 0.13)]));
+        list.push([0.27, 1, () => G.sphere(tail, 0.11)], [0.22, 1, () => G.sphere(tail2, 0.1)]);
+        const bonds = [];
+        for (let i = 0; i < 6; i++) bonds.push([ring[i], ring[(i + 1) % 6]]);
+        [0, 2, 4].forEach((ri, j) => bonds.push([ring[ri], out[j]]));
+        bonds.push([out[0], tail], [out[2], tail2]);
+        bonds.forEach(([a, b]) => list.push([0.1, 2, () => G.tube(a, b, 0.02, 0.02)]));
+        return list;
+      },
+      notes: [{ at: [0, 0, 0], fr: 'cycle aromatique', en: 'aromatic ring', o: [-150, -96] },
+        { at: [1.1, 0.72, 0.25], fr: 'masse inconnue ?', en: 'unknown mass?', o: [26, -88] }]
     },
-    knee(G) {
-      return [
-        [1.2, 0, () => G.tube([0, 1.15, 0], [0, 0.32, 0], 0.15, 0.2)],
-        [0.5, 0, () => G.sphere([-0.14, 0.18, -0.02], 0.17)],
-        [0.5, 0, () => G.sphere([0.14, 0.18, -0.02], 0.17)],
-        [0.5, 1, () => G.ellipsoid([0, -0.08, 0], [0.33, 0.06, 0.24])],
-        [1.0, 0, () => G.tube([0, -0.14, 0], [0, -1.12, 0], 0.2, 0.13)],
-        [0.25, 0, () => G.tube([0.28, -0.24, -0.05], [0.25, -1.05, -0.05], 0.05, 0.045)],
-        [0.3, 2, () => G.ellipsoid([0, 0.2, 0.26], [0.1, 0.13, 0.05])],
-        [0.3, 2, () => G.curve(u => { const a = u * Math.PI * 1.7 + 0.7; return [Math.cos(a) * 0.24, 0.0, Math.sin(a) * 0.17]; }, 0.025)]
-      ];
+    knee: {
+      fig: { fr: 'genou du coureur', en: 'a runner’s knee' },
+      classes: [{ m: 1, c: 0, fr: 'os', en: 'bone' }, { m: 2, c: 1, fr: 'ménisque', en: 'meniscus' }, { m: 0, c: 2, fr: 'rotule et tendon', en: 'kneecap and tendon' }],
+      parts(G) {
+        return [
+          [1.2, 0, () => G.tube([0, 1.15, 0], [0, 0.32, 0], 0.15, 0.2)],
+          [0.5, 0, () => G.sphere([-0.14, 0.18, -0.02], 0.17)],
+          [0.5, 0, () => G.sphere([0.14, 0.18, -0.02], 0.17)],
+          [0.55, 1, () => G.ellipsoid([0, -0.08, 0], [0.33, 0.06, 0.24])],
+          [1.0, 0, () => G.tube([0, -0.14, 0], [0, -1.12, 0], 0.2, 0.13)],
+          [0.25, 0, () => G.tube([0.28, -0.24, -0.05], [0.25, -1.05, -0.05], 0.05, 0.045)],
+          [0.32, 2, () => G.ellipsoid([0, 0.2, 0.26], [0.1, 0.13, 0.05])],
+          [0.28, 2, () => G.curve(u => [0, 0.08 - u * 0.5, 0.25 - u * 0.06], 0.03)]
+        ];
+      },
+      notes: [{ at: [0, 0.2, 0.3], fr: 'rotule', en: 'kneecap', o: [40, -96] },
+        { at: [-0.3, -0.08, 0.05], fr: 'ménisque', en: 'meniscus', o: [-150, 50] }]
     },
-    bacteria(G) {
-      const capsule = () => {
-        const L = 0.62, r = 0.33;
-        if (Math.random() < 0.62) return G.tube([-L, 0, 0], [L, 0, 0], r, r);
-        const p = G.unit(), side = p[0] < 0 ? -1 : 1;     // demi-sphères aux deux bouts
-        return [side * L + p[0] * r, p[1] * r, p[2] * r];
-      };
-      const flag = k => u => { const x = 0.9 + u * 1.0; const ph = k * 1.6; return [x, Math.sin(u * 9 + ph) * 0.12 * u + (k - 1.5) * 0.12, Math.cos(u * 9 + ph) * 0.12 * u]; };
-      return [
-        [1.6, 0, capsule],
-        [0.25, 2, () => G.ball([0, 0, 0], 0.18)],
-        ...[0, 1, 2, 3].map(k => [0.12, 1, () => G.curve(flag(k), 0.012)]),
-        [0.2, 1, () => { const p = G.unit(); return [p[0] * 0.7, p[1] * 0.36, p[2] * 0.36].map(v => v * 1.18); }]
-      ];
+    bacteria: {
+      fig: { fr: 'bactérie résistante', en: 'resistant bacterium' },
+      classes: [{ m: 1, c: 1, fr: 'membrane', en: 'membrane' }, { m: 5, c: 0, fr: 'ADN', en: 'DNA' }, { m: 2, c: 0, fr: 'flagelle', en: 'flagellum' }, { m: 0, c: 2, fr: 'plasmide de résistance', en: 'resistance plasmid' }],
+      parts(G, R) {
+        const capsule = () => {
+          const L = 0.62, r = 0.33;
+          if (R() < 0.62) return G.tube([-L, 0, 0], [L, 0, 0], r, r);
+          const p = G.unit(), side = p[0] < 0 ? -1 : 1;
+          return [side * L + p[0] * r, p[1] * r, p[2] * r];
+        };
+        const flag = k => u => { const x = 0.9 + u * 0.95, ph = k * 1.6; return [x, Math.sin(u * 9 + ph) * 0.12 * u + (k - 1.5) * 0.11, Math.cos(u * 9 + ph) * 0.12 * u]; };
+        const plasmid = () => { const a = R() * Math.PI * 2; return [-0.3 + Math.cos(a) * 0.1 + G.gauss() * 0.012, 0.06 + Math.sin(a) * 0.1, 0.08 + G.gauss() * 0.012]; };
+        return [
+          [1.6, 0, capsule],
+          [0.32, 1, () => G.curve(u => [-0.5 + u * 1.0, Math.sin(u * 14) * 0.1, Math.cos(u * 11) * 0.1], 0.03)],
+          ...[0, 1, 2, 3].map(k => [0.11, 2, () => G.curve(flag(k), 0.01)]),
+          [0.2, 3, plasmid]
+        ];
+      },
+      notes: [{ at: [-0.3, 0.06, 0.08], fr: 'plasmide de résistance', en: 'resistance plasmid', o: [-170, -100] },
+        { at: [1.7, 0.1, 0], fr: 'flagelle', en: 'flagellum', o: [-40, 70] }]
     },
-    flame(G) {
-      const prof = s => 0.6 * Math.pow(s, 0.38) * Math.pow(1 - s, 0.9) * 2.05;
-      const flameSurf = (scale, y0) => () => { const s = Math.random(); const a = Math.random() * Math.PI * 2; const r = prof(s) * scale; return [Math.cos(a) * r, y0 + s * 2.0 * scale, Math.sin(a) * r]; };
-      return [
-        [1.4, 0, flameSurf(1, -1)],
-        [0.6, 1, flameSurf(0.6, -0.95)],
-        [0.25, 2, () => { const a = Math.random() * Math.PI * 2, r = 0.2 + Math.random() * 0.6; return [Math.cos(a) * r, -1.04, Math.sin(a) * r]; }],
-        [0.18, 1, () => [(Math.random() - .5) * 0.9, -0.2 + Math.random() * 1.4, (Math.random() - .5) * 0.9]]
-      ];
+    flame: {
+      fig: { fr: 'départ de feu', en: 'fire outbreak' },
+      classes: [{ m: 0, c: 2, fr: 'flamme', en: 'flame' }, { m: 1, c: 0, fr: 'végétation sèche', en: 'dry vegetation' }, { m: 2, c: 2, fr: 'braises', en: 'embers' }],
+      parts(G, R) {
+        const prof = s => 0.6 * Math.pow(s, 0.38) * Math.pow(1 - s, 0.9) * 2.05;
+        const surf = (scale, y0) => () => { const s = R(), a = R() * Math.PI * 2, r = prof(s) * scale; return [Math.cos(a) * r, y0 + s * 2.0 * scale, Math.sin(a) * r]; };
+        return [
+          [1.3, 0, surf(1, -1)],
+          [0.5, 0, surf(0.6, -0.95)],
+          [0.36, 1, () => { const a = R() * Math.PI * 2, r = 0.25 + Math.sqrt(R()) * 0.75; return [Math.cos(a) * r, -1.04 + R() * 0.05, Math.sin(a) * r]; }],
+          [0.16, 2, () => [(R() - .5) * 1.0, -0.2 + R() * 1.5, (R() - .5) * 1.0]]
+        ];
+      },
+      notes: [{ at: [0.62, -1.02, 0.25], fr: 'végétation sèche', en: 'dry vegetation', o: [30, 64] },
+        { at: [0.28, 0.55, 0.3], fr: 'braises', en: 'embers', o: [60, -70] }]
     },
-    fracture(G) {
-      return [
-        [0.9, 0, () => G.tube([-1.0, -0.05, 0], [-0.09, 0, 0], 0.12, 0.12)],
-        [0.9, 0, () => G.tube([0.09, 0.02, 0], [1.0, 0.1, 0], 0.12, 0.12)],
-        [0.35, 0, () => G.ellipsoid([-1.06, -0.06, 0], [0.12, 0.24, 0.2])],
-        [0.35, 0, () => G.ellipsoid([1.06, 0.11, 0], [0.12, 0.24, 0.2])],
-        [0.22, 1, () => { const a = Math.random() * Math.PI * 2, side = Math.random() < .5 ? -1 : 1; return [side * (0.06 + Math.random() * 0.06) + Math.sin(a * 3) * 0.03, Math.cos(a) * 0.12, Math.sin(a) * 0.12]; }],
-        [0.85, 2, () => G.boxEdges([0, 0.02, 0], [0.34, 0.36, 0.3])],
-        [0.12, 0, () => { const u = Math.random(); return [-0.34 + u * 0.26, 0.42, 0.3]; }]
-      ];
+    fracture: {
+      fig: { fr: 'fracture détectée', en: 'detected fracture' },
+      classes: [{ m: 1, c: 0, fr: 'os', en: 'bone' }, { m: 0, c: 2, fr: 'trait de fracture', en: 'fracture line' }, { m: 5, c: 2, fr: 'boîte YOLO', en: 'YOLO box' }],
+      parts(G, R) {
+        return [
+          [0.9, 0, () => G.tube([-1.0, -0.05, 0], [-0.09, 0, 0], 0.12, 0.12)],
+          [0.9, 0, () => G.tube([0.09, 0.02, 0], [1.0, 0.1, 0], 0.12, 0.12)],
+          [0.35, 0, () => G.ellipsoid([-1.06, -0.06, 0], [0.12, 0.24, 0.2])],
+          [0.35, 0, () => G.ellipsoid([1.06, 0.11, 0], [0.12, 0.24, 0.2])],
+          [0.26, 1, () => { const a = R() * Math.PI * 2, side = R() < .5 ? -1 : 1; return [side * (0.05 + R() * 0.05) + Math.sin(a * 3) * 0.03, Math.cos(a) * 0.12, Math.sin(a) * 0.12]; }],
+          [0.8, 2, () => G.boxEdges([0, 0.02, 0], [0.34, 0.36, 0.3])]
+        ];
+      },
+      notes: [{ at: [-0.34, 0.38, 0.3], tag: { fr: 'fracture 0,94', en: 'fracture 0.94' } },
+        { at: [0.05, -0.12, 0.1], fr: 'trait de fracture', en: 'fracture line', o: [70, 80] }]
     },
-    seed(G) {
-      const seedShape = (c, s, rot) => () => {
-        const p = G.unit();
-        let x = p[0] * 0.42, y = p[1] * 0.85, z = p[2] * 0.34;
-        if (z > 0 && Math.abs(x) < 0.07) z *= 0.78;
-        y *= 1 - 0.18 * Math.abs(x);
-        const cr = Math.cos(rot), sr = Math.sin(rot);
-        return [c[0] + (x * cr - y * sr) * s, c[1] + (x * sr + y * cr) * s, c[2] + z * s];
-      };
-      return [
-        [1.6, 0, seedShape([0, 0, 0], 1, 0.35)],
-        [0.25, 2, () => {                                   // sillon de la graine
-          const v = Math.random() * 1.9 - 0.95, y = v * 0.85, z = 0.34 * Math.sqrt(1 - v * v) * 0.8 + 0.01;
-          const cr = Math.cos(0.35), sr = Math.sin(0.35);
-          return [-y * sr, y * cr, z];
-        }],
-        [0.2, 1, seedShape([0.95, 0.62, -0.2], 0.3, -0.6)],
-        [0.2, 1, seedShape([-0.9, -0.55, 0.15], 0.34, 1.1)],
-        [0.16, 2, seedShape([0.85, -0.72, 0.3], 0.24, 2.2)]
-      ];
+    seed: {
+      fig: { fr: 'graines', en: 'seeds' },
+      classes: [{ m: 1, c: 0, fr: 'graine connue', en: 'known seed' }, { m: 0, c: 2, fr: 'sillon', en: 'crease' }, { m: 2, c: 1, fr: 'autre variété', en: 'other variety' }],
+      parts(G, R) {
+        const seedShape = (c, s, rot) => () => {
+          const p = G.unit();
+          let x = p[0] * 0.42, y = p[1] * 0.85, z = p[2] * 0.34;
+          if (z > 0 && Math.abs(x) < 0.07) z *= 0.78;
+          y *= 1 - 0.18 * Math.abs(x);
+          const cr = Math.cos(rot), sr = Math.sin(rot);
+          return [c[0] + (x * cr - y * sr) * s, c[1] + (x * sr + y * cr) * s, c[2] + z * s];
+        };
+        return [
+          [1.5, 0, seedShape([0, 0, 0], 1, 0.35)],
+          [0.3, 1, () => { const v = R() * 1.9 - 0.95, y = v * 0.85, z = 0.34 * Math.sqrt(1 - v * v) * 0.8 + 0.01, cr = Math.cos(0.35), sr = Math.sin(0.35); return [-y * sr, y * cr, z]; }],
+          [0.22, 2, seedShape([0.95, 0.62, -0.2], 0.3, -0.6)],
+          [0.22, 2, seedShape([-0.9, -0.55, 0.15], 0.34, 1.1)],
+          [0.16, 2, seedShape([0.85, -0.72, 0.3], 0.24, 2.2)]
+        ];
+      },
+      notes: [{ at: [-0.1, 0.25, 0.3], fr: 'sillon', en: 'crease', o: [-120, -80] },
+        { at: [0.85, -0.72, 0.36], fr: 'hors distribution ?', en: 'out of distribution?', o: [10, 70] }]
     },
-    spectrogram(G) {
-      // Grille temps × fréquence ; la hauteur est animée (voir ANIM)
-      return [
-        [1.9, 0, () => [Math.random() * 2.4 - 1.2, 0, Math.random() * 1.5 - 0.75]],
-        [0.25, 2, () => { const u = Math.random(); return [u * 2.4 - 1.2, -0.42, (Math.random() < .5 ? -1 : 1) * 0.75]; }]
-      ];
+    spectrogram: {
+      fig: { fr: 'spectrogramme d’un chant', en: 'birdsong spectrogram' },
+      axes: { fr: ['temps', 'énergie', 'fréquence'], en: ['time', 'energy', 'frequency'] },
+      classes: [{ m: 5, c: 1, fr: 'bruit de fond', en: 'background noise' }, { m: 0, c: 2, fr: 'chant détecté', en: 'detected song' }],
+      parts(G, R) {
+        // grille régulière temps × fréquence, comme les cases d'un spectrogramme
+        const cols = 46, rows = 26; let k = 0;
+        return [[1, 0, () => { const i = k++, c = i % cols, r = Math.floor(i / cols) % rows; return [-1.15 + c / (cols - 1) * 2.3, 0, -0.75 + r / (rows - 1) * 1.5]; }]];
+      },
+      notes: [{ at: [0.15, 0.1, -0.15], fr: 'chant ?', en: 'song?', o: [40, -96] }]
     },
-    vessels(G) {
-      const R = rng(7);
-      const segs = [];
-      (function branch(a, dir, len, r, depth) {
-        const b = [a[0] + dir[0] * len, a[1] + dir[1] * len, a[2] + dir[2] * len];
-        segs.push([a, b, r]);
-        if (depth >= 6) return;
-        const n = depth < 2 ? 2 : (R() < 0.7 ? 2 : 3);
-        for (let i = 0; i < n; i++) {
-          const nd = [dir[0] + (R() - .5) * 1.3, dir[1] + (R() - .5) * 0.9, dir[2] + (R() - .5) * 1.3];
-          const l = Math.hypot(...nd);
-          branch(b, nd.map(v => v / l), len * (0.68 + R() * 0.12), r * 0.7, depth + 1);
-        }
-      })([0, -1.0, 0], [0, 1, 0], 0.55, 0.07, 0);
-      const list = segs.map(([a, b, r]) => {
-        const l = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
-        return [l * (r + 0.02) * 9, r > 0.03 ? 0 : 1, () => G.tube(a, b, r, r * 0.85)];
-      });
-      list.push([0.35, 2, () => { const p = G.unit(); return [p[0] * 1.15, p[1] * 0.62 + 0.15, p[2] * 0.55]; }]);
-      return list;
+    vessels: {
+      fig: { fr: 'vaisseaux du foie', en: 'liver vessels' },
+      classes: [{ m: 0, c: 2, fr: 'vaisseau', en: 'vessel' }, { m: 5, c: 1, fr: 'capillaire', en: 'capillary' }, { m: 1, c: 0, fr: 'contour du foie', en: 'liver outline' }],
+      parts(G, R, meta) {
+        const Rv = rng(7), segs = [];
+        (function branch(a, dir, len, r, depth) {
+          const b = [a[0] + dir[0] * len, a[1] + dir[1] * len, a[2] + dir[2] * len];
+          segs.push([a, b, r]);
+          if (depth >= 6) return;
+          const n = depth < 2 ? 2 : (Rv() < 0.7 ? 2 : 3);
+          for (let i = 0; i < n; i++) {
+            const nd = [dir[0] + (Rv() - .5) * 1.3, dir[1] + (Rv() - .5) * 0.9, dir[2] + (Rv() - .5) * 1.3];
+            const l = Math.hypot(...nd);
+            branch(b, nd.map(v => v / l), len * (0.68 + Rv() * 0.12), r * 0.7, depth + 1);
+          }
+        })([0, -1.0, 0], [0, 1, 0], 0.55, 0.07, 0);
+        meta.lost = segs.filter(s => s[2] < 0.012).reduce((best, s) => (!best || s[1][0] > best[0] ? s[1] : best), null) || segs[segs.length - 1][1];
+        const list = segs.map(([a, b, r]) => {
+          const l = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+          return [l * (r + 0.02) * 9, r > 0.03 ? 0 : 1, () => G.tube(a, b, r, r * 0.85)];
+        });
+        list.push([0.85, 2, () => { const p = G.unit(); return [p[0] * 1.15, p[1] * 0.62 + 0.15, p[2] * 0.55]; }]);
+        return list;
+      },
+      notes: meta => [{ at: meta.lost, fr: 'vaisseau perdu ?', en: 'lost vessel?', o: [36, -84] },
+        { at: [-1.12, 0.3, 0.1], fr: 'foie', en: 'liver', o: [-90, -60] }]
     }
   };
 
-  // Animations propres à certaines formes (appliquées à l'affichage)
+  // Animations propres à certaines formes
   const ANIM = {
     flame(x, y, z, time, i) {
       const h = (y + 1) / 2;
       return [x + Math.sin(time * 3.1 + y * 4 + i * 0.01) * 0.06 * h, y + Math.sin(time * 5 + i) * 0.015, z + Math.cos(time * 2.7 + y * 3) * 0.05 * h];
     },
-    spectrogram(x, y, z, time, i) {
-      if (y < -0.3) return [x, y, z];
+    spectrogram(x, y, z, time) {
       const tt = x + time * 0.35;
-      const w = ((tt % 1.2) + 1.2) % 1.2;            // motif de chant toutes les 1,2 unités
+      const w = ((tt % 1.2) + 1.2) % 1.2;
       const chirp = -0.35 + Math.sin(w * 5.2) * 0.32 + w * 0.25;
-      const call = Math.exp(-Math.pow((z - chirp) / 0.08, 2)) * (w < 0.85 ? 1 : 0) * 0.55;
-      const harm = Math.exp(-Math.pow((z - chirp - 0.38) / 0.06, 2)) * (w < 0.85 ? 0.5 : 0) * 0.3;
+      const call = Math.exp(-Math.pow((z - chirp) / 0.09, 2)) * (w < 0.85 ? 1 : 0) * 0.85;
+      const harm = Math.exp(-Math.pow((z - chirp - 0.38) / 0.07, 2)) * (w < 0.85 ? 0.5 : 0) * 0.5;
       const noise = (Math.sin(x * 13 + z * 7 + time) * 0.5 + 0.5) * 0.04;
-      return [x, -0.4 + call + harm + noise, z];
+      return [x, -0.55 + call + harm + noise, z];
     }
-  };
-
-  // Couleurs propres à certaines formes (0 encre, 1 vert d'eau, 2 orange)
-  const COLOR_MAP = { flame: [2, 2, 0], fracture: [0, 2, 2], spectrogram: [1, 1, 0], vessels: [2, 2, 1] };
-  const FIG = {
-    globe: { fr: 'le réseau des huit projets', en: 'the eight projects' },
-    molecule: { fr: 'molécule inconnue', en: 'unknown molecule' },
-    knee: { fr: 'genou du coureur', en: 'a runner’s knee' },
-    bacteria: { fr: 'bactérie résistante', en: 'resistant bacterium' },
-    flame: { fr: 'départ de feu', en: 'fire outbreak' },
-    fracture: { fr: 'fracture détectée', en: 'detected fracture' },
-    seed: { fr: 'graines', en: 'seeds' },
-    spectrogram: { fr: 'spectrogramme d’un chant', en: 'birdsong spectrogram' },
-    vessels: { fr: 'vaisseaux du foie', en: 'liver vessels' }
   };
 
   function buildShape(name, N, seed) {
     const R = rng(seed);
-    const saved = Math.random; Math.random = R;      // formes reproductibles
     const G = makeGen(R);
-    const parts = SHAPES[name](G);
+    const fig = FIGS[name], meta = {};
+    const parts = fig.parts(G, R, meta);
     const total = parts.reduce((s, p) => s + p[0], 0);
-    const pos = new Float32Array(N * 3), col = new Uint8Array(N);
+    const pos = new Float32Array(N * 3), cls = new Uint8Array(N);
     let k = 0;
     parts.forEach(([w, c, gen], j) => {
       const n = j === parts.length - 1 ? N - k : Math.round(N * w / total);
-      const cm = COLOR_MAP[name];
-      for (let i = 0; i < n && k < N; i++, k++) { const p = gen(); pos[k * 3] = p[0]; pos[k * 3 + 1] = p[1]; pos[k * 3 + 2] = p[2]; col[k] = cm ? cm[c] : c; }
+      for (let i = 0; i < n && k < N; i++, k++) { const p = gen(); pos[k * 3] = p[0]; pos[k * 3 + 1] = p[1]; pos[k * 3 + 2] = p[2]; cls[k] = c; }
     });
-    for (; k < N; k++) { const p = G.sphere([0, 0, 0], 1); pos.set(p, k * 3); col[k] = 0; }
-    // Mélange : les points changent de place pendant les transitions
+    for (; k < N; k++) { pos.set(G.sphere([0, 0, 0], 1), k * 3); cls[k] = 0; }
+    // recadrage : la forme tient dans la boîte d'axes, centrée
+    const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+    for (let i = 0; i < N; i++) for (let a = 0; a < 3; a++) { const v = pos[i * 3 + a]; if (v < lo[a]) lo[a] = v; if (v > hi[a]) hi[a] = v; }
+    const mid = lo.map((v, a) => (v + hi[a]) / 2);
+    const fit = 1.08 / Math.max(0.5, ...hi.map((v, a) => (v - lo[a]) / 2));
+    const tf = q => q.map((v, a) => (v - mid[a]) * fit);
+    for (let i = 0; i < N * 3; i++) pos[i] = (pos[i] - mid[i % 3]) * fit;
+    // mélange : les points changent de place pendant les transitions
     for (let i = N - 1; i > 0; i--) {
       const j = Math.floor(R() * (i + 1));
       for (let a = 0; a < 3; a++) { const tmp = pos[i * 3 + a]; pos[i * 3 + a] = pos[j * 3 + a]; pos[j * 3 + a] = tmp; }
-      const tc = col[i]; col[i] = col[j]; col[j] = tc;
+      const tc = cls[i]; cls[i] = cls[j]; cls[j] = tc;
     }
-    Math.random = saved;
-    return { name, pos, col };
+    const sprite = new Uint8Array(N);
+    for (let i = 0; i < N; i++) { const c = fig.classes[cls[i]]; sprite[i] = c.m * 3 + c.c; }
+    const notes = (typeof fig.notes === 'function' ? fig.notes(meta) : (fig.notes || [])).map(n => Object.assign({}, n, { at: tf(n.at) }));
+    return { name, pos, cls, sprite, notes, fig, fit, mid };
+  }
+
+  // Marqueurs dessinés à la main (4 variantes par type et par encre)
+  function makeSprites(px) {
+    const S = Math.ceil(px * 2.2), out = [];
+    for (let m = 0; m < 6; m++) for (let c = 0; c < 3; c++) {
+      const vars = [];
+      for (let v = 0; v < 4; v++) {
+        const R = rng(m * 97 + c * 13 + v * 7 + 1);
+        const cv = document.createElement('canvas'); cv.width = cv.height = S;
+        const g = cv.getContext('2d');
+        const j = a => (R() - 0.5) * a * S;
+        g.strokeStyle = g.fillStyle = INKS[c];
+        g.lineCap = g.lineJoin = 'round';
+        g.lineWidth = S * 0.1;
+        g.translate(S / 2, S / 2);
+        g.rotate((R() - 0.5) * 0.6);
+        g.beginPath();
+        if (m === 0 || m === 5) {
+          const r = S * (m === 0 ? 0.25 : 0.13);
+          for (let k = 0; k <= 9; k++) { const a = k / 9 * Math.PI * 2, rr = r * (0.88 + R() * 0.24); g[k ? 'lineTo' : 'moveTo'](Math.cos(a) * rr, Math.sin(a) * rr); }
+          g.closePath(); g.fill();
+        } else if (m === 1) {
+          const r = S * 0.27, a0 = R() * 6, sweep = Math.PI * 2 * (0.92 + R() * 0.14);
+          for (let k = 0; k <= 14; k++) { const a = a0 + k / 14 * sweep, rr = r * (0.9 + R() * 0.16); g[k ? 'lineTo' : 'moveTo'](Math.cos(a) * rr, Math.sin(a) * rr); }
+          g.stroke();
+        } else if (m === 2 || m === 3) {
+          const L = S * 0.3, base = m === 2 ? Math.PI / 4 : 0;
+          for (const a of [base, base + Math.PI / 2]) {
+            const ca = Math.cos(a), sa = Math.sin(a);
+            g.moveTo(-ca * L + j(0.05), -sa * L + j(0.05));
+            g.quadraticCurveTo(j(0.1), j(0.1), ca * L + j(0.05), sa * L + j(0.05));
+          }
+          g.stroke();
+        } else {
+          const r = S * 0.3;
+          for (let k = 0; k <= 3; k++) { const a = -Math.PI / 2 + k / 3 * Math.PI * 2; g[k ? 'lineTo' : 'moveTo'](Math.cos(a) * r + j(0.06), Math.sin(a) * r + j(0.06)); }
+          g.stroke();
+        }
+        vars.push(cv);
+      }
+      out.push(vars);
+    }
+    return { list: out, S };
   }
 
   let cloud = null;
@@ -712,113 +778,315 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
     const small = window.innerWidth < 760;
-    const N = small ? 1500 : 2800;
+    const N = small ? 760 : 1250;
     const shapes = {};
-    const getShape = name => shapes[name] || (shapes[name] = buildShape(name, N, 11 + Object.keys(shapes).length * 101));
+    let seedN = 0;
+    const getShape = name => shapes[name] || (shapes[name] = buildShape(name, N, 11 + (seedN++) * 101));
 
-    const cur = new Float32Array(N * 3);
-    const g0 = getShape('globe');
-    cur.set(g0.pos);
-    for (let i = 0; i < N * 3; i++) cur[i] *= 3 + Math.random() * 2;    // arrivée depuis l'extérieur
-    let target = g0, colors = new Uint8Array(g0.col);
-    const speed = new Float32Array(N).map(() => 0.035 + Math.random() * 0.05);
-    const COLORS = [[29, 32, 39], [31, 157, 139], [232, 89, 12]];   // encre, vert d'eau, orange
-    const LEVELS = 8;
-    const styles = COLORS.map(c => [...Array(LEVELS)].map((_, l) => `rgba(${c[0]},${c[1]},${c[2]},${(0.12 + 0.82 * (l + 1) / LEVELS).toFixed(3)})`));
-    const buckets = [...Array(3 * LEVELS)].map(() => ({ xs: new Float32Array(N), ys: new Float32Array(N), ss: new Float32Array(N), n: 0 }));
+    // état des points : départ → arrivée, avec un léger arc pendant le trajet
+    const from = new Float32Array(N * 3), to = new Float32Array(N * 3), arc = new Float32Array(N * 3);
+    const spFrom = new Uint8Array(N), spTo = new Uint8Array(N), delay = new Float32Array(N);
+    const sx = new Float32Array(N), sy = new Float32Array(N), sz = new Float32Array(N), sp = new Uint8Array(N);
+    const order = new Uint16Array(N).map((_, i) => i);
+    const R0 = rng(3);
+    const g0 = getShape('clusters');
+    for (let i = 0; i < N; i++) {           // arrivée depuis l'extérieur de la boîte
+      const p = makeGen(R0).unit();
+      from[i * 3] = p[0] * 3; from[i * 3 + 1] = p[1] * 3; from[i * 3 + 2] = p[2] * 3;
+      delay[i] = R0() * 0.35;
+    }
+    to.set(g0.pos); spFrom.set(g0.sprite); spTo.set(g0.sprite);
+    let target = g0, tStart = performance.now(), dur = 1100;
 
-    let W = 0, H = 0, dpr = 1, rotY = 0.6, rotX = -0.18, tiltX = 0, tiltY = 0, ptr = { x: -9999, y: -9999, tx: 0, ty: 0 };
-    let visible = false, raf = 0, time = 0, last = performance.now(), settle = 0;
+    // boîte d'axes : arêtes tremblées (fixées une fois pour toutes)
+    const B = 1.25, Rb = rng(21);
+    const wob = (a, b, n, amp) => { const pts = []; for (let k = 0; k <= n; k++) { const u = k / n, e = Math.sin(u * Math.PI); pts.push([a[0] + (b[0] - a[0]) * u + (Rb() - .5) * amp * e, a[1] + (b[1] - a[1]) * u + (Rb() - .5) * amp * e, a[2] + (b[2] - a[2]) * u + (Rb() - .5) * amp * e]); } return pts; };
+
+    let W = 0, H = 0, dpr = 1, sprites = null, rotY = 0.7, rotX = -0.26, tiltX = 0, tiltY = 0;
+    const ptr = { x: -9999, y: -9999, tx: 0, ty: 0 };
+    let visible = false, raf = 0, time = 0, last = performance.now();
+    let figNum = 0, view = { cx: 0, cy: 0, s: 1, mobile: false };
 
     function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 2);
+      dpr = Math.min(window.devicePixelRatio || 1, small ? 2 : 2);
       W = canvas.clientWidth; H = canvas.clientHeight;
       canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+      const mobile = W < 760;
+      view = {
+        mobile,
+        top: 104,
+        cx: mobile ? W * 0.5 : W * 0.72,
+        cy: mobile ? H * 0.34 : H * 0.5,
+        s: mobile ? Math.min(W * 0.24, H * 0.135) : Math.min(W * 0.13, H * 0.23)
+      };
+      sprites = makeSprites((mobile ? 4.6 : 5.4) * dpr);
       draw(0);
     }
 
     function setShape(name) {
       const s = getShape(name);
       if (s === target) return;
-      target = s;
-      colors = new Uint8Array(s.col);
-      settle = 1;
+      const now = performance.now();
+      // repartir de la position affichée
+      for (let i = 0; i < N; i++) {
+        const e = ease(clamp((now - tStart - delay[i] * 1000) / dur, 0, 1));
+        for (let a = 0; a < 3; a++) from[i * 3 + a] = from[i * 3 + a] + (to[i * 3 + a] - from[i * 3 + a]) * e + arc[i * 3 + a] * Math.sin(Math.PI * e);
+        spFrom[i] = e < 0.5 ? spFrom[i] : spTo[i];
+        delay[i] = Math.random() * 0.3;
+        arc[i * 3] = (Math.random() - .5) * 0.5; arc[i * 3 + 1] = Math.random() * 0.45; arc[i * 3 + 2] = (Math.random() - .5) * 0.5;
+      }
+      to.set(s.pos); spTo.set(s.sprite);
+      target = s; tStart = now;
       kick();
+    }
+    const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    // projection : rotation (lacet puis tangage) et légère perspective
+    let cY = 1, sY = 0, cX = 1, sX = 0;
+    function proj(x, y, z, out) {
+      const x1 = x * cY - z * sY, z1 = x * sY + z * cY;
+      const y2 = y * cX - z1 * sX, z2 = y * sX + z1 * cX;
+      const f = 9 / (9 + z2);
+      out[0] = view.cx + x1 * view.s * f; out[1] = view.cy - y2 * view.s * f; out[2] = z2;
+      return out;
+    }
+    const P = [0, 0, 0], Q = [0, 0, 0];
+
+    function handLine(pts, width, color, alpha) {
+      ctx.beginPath();
+      pts.forEach((p, k) => { proj(p[0], p[1], p[2], P); ctx[k ? 'lineTo' : 'moveTo'](P[0] * dpr, P[1] * dpr); });
+      ctx.lineWidth = width * dpr; ctx.strokeStyle = color; ctx.globalAlpha = alpha; ctx.stroke();
+    }
+    function noteText(txt, x, y, size, color, align) {
+      ctx.font = `700 ${size * dpr}px Caveat, "Segoe Print", cursive`;
+      ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle';
+      ctx.lineJoin = 'round'; ctx.lineWidth = 5 * dpr; ctx.strokeStyle = 'rgba(246,243,236,.92)';
+      ctx.strokeText(txt, x * dpr, y * dpr);
+      ctx.fillStyle = color; ctx.fillText(txt, x * dpr, y * dpr);
+    }
+    function arrow(x0, y0, x1, y1, color) {
+      const mx = (x0 + x1) / 2 + (y1 - y0) * 0.22, my = (y0 + y1) / 2 - (x1 - x0) * 0.22;
+      ctx.beginPath(); ctx.moveTo(x0 * dpr, y0 * dpr); ctx.quadraticCurveTo(mx * dpr, my * dpr, x1 * dpr, y1 * dpr);
+      ctx.strokeStyle = color; ctx.lineWidth = 1.8 * dpr; ctx.lineCap = 'round'; ctx.stroke();
+      const a = Math.atan2(y1 - my, x1 - mx), h = 9;
+      ctx.beginPath();
+      ctx.moveTo((x1 - Math.cos(a - 0.45) * h) * dpr, (y1 - Math.sin(a - 0.45) * h) * dpr);
+      ctx.lineTo(x1 * dpr, y1 * dpr);
+      ctx.lineTo((x1 - Math.cos(a + 0.5) * h) * dpr, (y1 - Math.sin(a + 0.5) * h) * dpr);
+      ctx.stroke();
+    }
+
+    // les trois faces du fond (comme un graphique 3D), graduations et noms des axes
+    const paneCache = {};
+    function drawAxes(alpha) {
+      const faces = [[0, -1], [0, 1], [1, -1], [1, 1], [2, -1], [2, 1]];
+      const back = [];
+      for (const [ax, sg] of faces) {
+        const n = [0, 0, 0]; n[ax] = sg;
+        proj(n[0], n[1], n[2], P); proj(0, 0, 0, Q);
+        if (P[2] > Q[2] + 1e-4) back.push([ax, sg]);
+      }
+      ctx.save();
+      for (const [ax, sg] of back) {
+        const key = ax + '' + sg;
+        if (!paneCache[key]) {
+          const u = (ax + 1) % 3, v = (ax + 2) % 3, lines = [];
+          for (let k = -2; k <= 2; k++) {
+            const a = [0, 0, 0], b = [0, 0, 0];
+            a[ax] = b[ax] = sg * B; a[u] = b[u] = k * B / 2; a[v] = -B; b[v] = B; lines.push(wob(a, b, 8, k % 2 ? 0.012 : 0.02));
+            const c = [0, 0, 0], d = [0, 0, 0];
+            c[ax] = d[ax] = sg * B; c[v] = d[v] = k * B / 2; c[u] = -B; d[u] = B; lines.push(wob(c, d, 8, k % 2 ? 0.012 : 0.02));
+          }
+          paneCache[key] = lines;
+        }
+        paneCache[key].forEach((pts, k) => {
+          const edge = k === 0 || k === 1 || k === 8 || k === 9;
+          handLine(pts, edge ? 1.5 : 1, edge ? '#1d2027' : '#1f9d8b', alpha * (edge ? 0.5 : 0.2));
+        });
+      }
+      // graduations sur les arêtes avant du sol et sur l'arête verticale du fond
+      const floorBack = back.find(f => f[0] === 1);
+      const xs = back.find(f => f[0] === 0), zs = back.find(f => f[0] === 2);
+      if (floorBack && xs && zs) {
+        const fy = floorBack[1] * B;
+        const names = (target.fig.axes || DIMS)[lang] || DIMS.fr;
+        // axe vertical : arête de silhouette des faces du fond, du côté droit
+        const v1 = [xs[1] * B, -zs[1] * B], v2 = [-xs[1] * B, zs[1] * B];
+        const vx = proj(v1[0], 0, v1[1], P)[0] > proj(v2[0], 0, v2[1], Q)[0] ? v1 : v2;
+        proj(0, 0, 0, Q); const ccx = Q[0], ccy = Q[1];
+        const axisEdges = [
+          { from: [-B, fy, -zs[1] * B], to: [B, fy, -zs[1] * B], ax: 0, name: names[0] },
+          { from: [-xs[1] * B, fy, -B], to: [-xs[1] * B, fy, B], ax: 2, name: names[2] },
+          { from: [vx[0], -B, vx[1]], to: [vx[0], B, vx[1]], ax: 1, name: names[1] }
+        ];
+        ctx.lineCap = 'round';
+        for (const e of axisEdges) {
+          for (let k = -1; k <= 1; k++) {
+            const p = e.from.slice(); p[e.ax] = k;
+            proj(p[0], p[1], p[2], P);
+            let dx = P[0] - ccx, dy = P[1] - ccy; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+            ctx.beginPath(); ctx.moveTo(P[0] * dpr, P[1] * dpr); ctx.lineTo((P[0] + dx * 7) * dpr, (P[1] + dy * 7) * dpr);
+            ctx.strokeStyle = '#1d2027'; ctx.globalAlpha = alpha * 0.6; ctx.lineWidth = 1.4 * dpr; ctx.stroke();
+            ctx.globalAlpha = alpha * 0.75;
+            noteText(k < 0 ? '−1' : String(k), P[0] + dx * 18, P[1] + dy * 16, 15, '#5c6270', 'center');
+          }
+          const m = e.from.map((v, i) => (v + e.to[i]) / 2);
+          proj(m[0], m[1], m[2], P);
+          let dx = P[0] - ccx, dy = P[1] - ccy; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+          ctx.globalAlpha = alpha * 0.9;
+          ctx.font = `700 ${19 * dpr}px Caveat, "Segoe Print", cursive`;
+          const hw = ctx.measureText(e.name).width / dpr / 2 + 6;
+          noteText(e.name, clamp(P[0] + dx * 40, hw, W - hw), clamp(P[1] + dy * 34, 70, H - 14), 19, '#167a6c', 'center');
+        }
+      }
+      ctx.restore();
     }
 
     function draw(dt) {
-      const mobile = W < 760;
-      const cx = mobile ? W * 0.5 : W * 0.68;
-      const cy = mobile ? H * 0.31 : H * 0.52;
-      const scale = mobile ? Math.min(W * 0.33, H * 0.18) : Math.min(W * 0.24, H * 0.34);
-      if (!motionPaused) { rotY += dt * 0.22; time += dt; }
-      tiltX += ((ptr.ty * 0.35) - tiltX) * 0.06;
-      tiltY += ((ptr.tx * 0.6) - tiltY) * 0.06;
+      if (!sprites) return 0;
+      const now = performance.now();
+      if (!motionPaused) { rotY += dt * 0.16; time += dt; }
+      tiltX += ((ptr.ty * 0.3) - tiltX) * 0.06;
+      tiltY += ((ptr.tx * 0.55) - tiltY) * 0.06;
       const ay = rotY + tiltY, ax = rotX + tiltX;
-      const cyR = Math.cos(ay), syR = Math.sin(ay), cxR = Math.cos(ax), sxR = Math.sin(ax);
+      cY = Math.cos(ay); sY = Math.sin(ay); cX = Math.cos(ax); sX = Math.sin(ax);
       const anim = ANIM[target.name];
-      const tp = target.pos;
-      let moving = 0;
-      for (const b of buckets) b.n = 0;
-      const pxr = 90 * dpr, pxr2 = pxr * pxr;
-      const px = ptr.x * dpr, py = ptr.y * dpr;
+      let moving = 0, minE = 1;
+      const pxr = 80, push = 22;
       for (let i = 0; i < N; i++) {
         const i3 = i * 3;
-        const k = reduceMotion ? 1 : speed[i];
-        const dx = tp[i3] - cur[i3], dy = tp[i3 + 1] - cur[i3 + 1], dz = tp[i3 + 2] - cur[i3 + 2];
-        if (dx * dx + dy * dy + dz * dz > 1e-6) { moving++; cur[i3] += dx * k; cur[i3 + 1] += dy * k; cur[i3 + 2] += dz * k; }
-        let x = cur[i3], y = cur[i3 + 1], z = cur[i3 + 2];
-        if (anim) { const a = anim(x, y, z, time, i); x = a[0]; y = a[1]; z = a[2]; }
-        // rotation
-        const x1 = x * cyR - z * syR, z1 = x * syR + z * cyR;
-        const y2 = y * cxR - z1 * sxR, z2 = y * sxR + z1 * cxR;
-        const f = 3.2 / (3.2 + z2);
-        let sx = (cx + x1 * scale * f) * dpr, sy = (cy - y2 * scale * f) * dpr;
-        // le pointeur écarte les points
-        const ddx = sx - px, ddy = sy - py, d2 = ddx * ddx + ddy * ddy;
-        if (d2 < pxr2) { const d = Math.sqrt(d2) || 1, push = (1 - d / pxr) * 26 * dpr; sx += ddx / d * push; sy += ddy / d * push; }
-        const depth = clamp((1.4 - z2) / 2.8, 0, 0.999);
-        const lvl = Math.floor(depth * LEVELS);
-        const bk = buckets[colors[i] * LEVELS + lvl];
-        bk.xs[bk.n] = sx; bk.ys[bk.n] = sy; bk.ss[bk.n] = (0.7 + depth * 1.9) * dpr * f; bk.n++;
+        const e = reduceMotion ? 1 : ease(clamp((now - tStart - delay[i] * 1000) / dur, 0, 1));
+        if (e < 1) moving++;
+        if (e < minE) minE = e;
+        const b = Math.sin(Math.PI * e);
+        let x = from[i3] + (to[i3] - from[i3]) * e + arc[i3] * b;
+        let y = from[i3 + 1] + (to[i3 + 1] - from[i3 + 1]) * e + arc[i3 + 1] * b;
+        let z = from[i3 + 2] + (to[i3 + 2] - from[i3 + 2]) * e + arc[i3 + 2] * b;
+        let spr = e < 0.5 ? spFrom[i] : spTo[i];
+        if (anim && e > 0) {
+          const ft = target.fit, md = target.mid;
+          const a = anim(x / ft + md[0], y / ft + md[1], z / ft + md[2], time, i);
+          a[0] = (a[0] - md[0]) * ft; a[1] = (a[1] - md[1]) * ft; a[2] = (a[2] - md[2]) * ft;
+          x += (a[0] - x) * e; y += (a[1] - y) * e; z += (a[2] - z) * e;
+          if (target.name === 'spectrogram' && e >= 0.5) spr = a[1] > (-0.28 - md[1]) * ft ? 0 * 3 + 2 : 5 * 3 + 1;
+        }
+        proj(x, y, z, P);
+        let px = P[0], py = P[1];
+        const ddx = px - ptr.x, ddy = py - ptr.y, d2 = ddx * ddx + ddy * ddy;
+        if (d2 < pxr * pxr) { const d = Math.sqrt(d2) || 1, k = (1 - d / pxr) * push; px += ddx / d * k; py += ddy / d * k; }
+        sx[i] = px; sy[i] = py; sz[i] = P[2]; sp[i] = spr;
       }
+      order.sort((a, b) => sz[b] - sz[a]);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawFigure(cx * dpr, cy * dpr, scale * dpr, mobile);
-      for (let c = 0; c < 3; c++) for (let l = 0; l < LEVELS; l++) {
-        const b = buckets[c * LEVELS + l];
-        if (!b.n) continue;
-        ctx.fillStyle = styles[c][l];
-        for (let j = 0; j < b.n; j++) { const s = b.ss[j]; ctx.fillRect(b.xs[j] - s / 2, b.ys[j] - s / 2, s, s); }
+      drawAxes(1);
+      const S = sprites.S, list = sprites.list;
+      for (let k = 0; k < N; k++) {
+        const i = order[k];
+        const depth = clamp((1.6 - sz[i]) / 3.2, 0, 1);          // 1 = devant
+        const f = 9 / (9 + sz[i]);
+        const size = S * f * (0.7 + depth * 0.45);
+        ctx.globalAlpha = 0.38 + depth * 0.62;
+        ctx.drawImage(list[sp[i]][i & 3], sx[i] * dpr - size / 2, sy[i] * dpr - size / 2, size, size);
       }
+      ctx.globalAlpha = 1;
+      drawNotes(minE);
+      drawLegend(minE);
       return moving;
     }
 
-    // Habillage façon croquis : cercle de construction, axes, graduations, légende « fig. »
-    let figNum = 0, figName = 'globe';
-    function drawFigure(x, y, s, mobile) {
-      const r = s * 1.38;
+    // annotations fléchées accrochées à la figure
+    function drawNotes(e) {
+      const a = clamp((e - 0.75) / 0.25, 0, 1);
+      if (a <= 0 || !target.notes.length) return;
       ctx.save();
-      ctx.strokeStyle = 'rgba(29,32,39,.28)';
-      ctx.lineWidth = 1.3 * dpr;
-      ctx.setLineDash([7 * dpr, 9 * dpr]);
-      ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.97, -0.05, 0, Math.PI * 2); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.strokeStyle = 'rgba(31,157,139,.35)';
+      for (const n of target.notes) {
+        proj(n.at[0], n.at[1], n.at[2], P);
+        const back = clamp((P[2] + 0.1) / 0.6, 0, 0.6);
+        ctx.globalAlpha = a * (1 - back);
+        if (n.plain) { noteText(n.plain, P[0] + 14, P[1] - 14, 19, '#1d2027', 'left'); continue; }
+        if (n.tag) {
+          const txt = L(n.tag);
+          ctx.font = `700 ${18 * dpr}px Caveat, "Segoe Print", cursive`;
+          const w = ctx.measureText(txt).width / dpr + 14;
+          ctx.fillStyle = '#e8590c';
+          ctx.fillRect(P[0] * dpr, (P[1] - 22) * dpr, w * dpr, 22 * dpr);
+          ctx.fillStyle = '#fff'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+          ctx.fillText(txt, (P[0] + 7) * dpr, (P[1] - 11) * dpr);
+          continue;
+        }
+        let ox = n.o[0], oy = n.o[1];
+        if (view.mobile) { ox *= 0.7; oy *= 0.7; }
+        const tx = P[0] + ox, ty = P[1] + oy, txt = L(n);
+        ctx.font = `700 ${20 * dpr}px Caveat, "Segoe Print", cursive`;
+        const w = ctx.measureText(txt).width / dpr;
+        const right = ox < 0;                                   // texte à gauche : on part de son bord droit
+        const ax0 = right ? tx + w + 4 : tx - 4, ay0 = ty + (oy < 0 ? 8 : -8);
+        const len = Math.hypot(P[0] - ax0, P[1] - ay0) || 1;
+        arrow(ax0, ay0, P[0] - (P[0] - ax0) / len * 6, P[1] - (P[1] - ay0) / len * 6, 'rgba(29,32,39,.8)');
+        noteText(txt, tx, ty, 20, '#1d2027', 'left');
+      }
+      ctx.restore();
+    }
+
+    // légende façon graphique, encadrée à main levée
+    function drawLegend(e) {
+      const cls = target.fig.classes;
+      if (view.mobile) { drawLegendRow(cls, e); return; }
+      const fs = 18, rowH = fs + 5, pad = 10;
+      ctx.save();
+      ctx.font = `700 ${fs * dpr}px Caveat, "Segoe Print", cursive`;
+      const w = Math.max(...cls.map(c => ctx.measureText(L(c)).width / dpr)) + 34 + pad * 2;
+      const h = cls.length * rowH + pad * 2 - 4;
+      const r = view.s * B;
+      let x = view.mobile ? 16 : Math.min(W - w - 18, view.cx + r * 1.15);
+      let y = view.mobile ? view.cy + r * 1.65 : view.cy - r * 1.75;
+      if (!view.mobile) { x = Math.min(x, W - w - 18); y = Math.max(y, 84); }
+      ctx.globalAlpha = 0.35 + 0.65 * clamp(e * 2 - 1, 0, 1);
+      ctx.fillStyle = 'rgba(255,253,248,.88)';
+      ctx.fillRect(x * dpr, y * dpr, w * dpr, h * dpr);
+      const Rl = rng(5);
       ctx.beginPath();
-      ctx.moveTo(x - r * 1.12, y); ctx.lineTo(x + r * 1.12, y);
-      ctx.moveTo(x, y - r * 1.1); ctx.lineTo(x, y + r * 1.1);
-      for (let k = -4; k <= 4; k++) { if (!k) continue; const d = k * r / 4; ctx.moveTo(x + d, y - 5 * dpr); ctx.lineTo(x + d, y + 5 * dpr); }
-      ctx.stroke();
-      if (!mobile) {
-        const label = `fig. ${pad(figNum)} — ${L(FIG[figName])}`;
+      const c4 = [[x, y], [x + w, y], [x + w, y + h], [x, y + h], [x, y]];
+      c4.forEach((p, k) => { const jx = (Rl() - .5) * 3, jy = (Rl() - .5) * 3; ctx[k ? 'lineTo' : 'moveTo']((p[0] + jx) * dpr, (p[1] + jy) * dpr); });
+      ctx.strokeStyle = '#1d2027'; ctx.lineWidth = 1.5 * dpr; ctx.stroke();
+      cls.forEach((c, k) => {
+        const yy = y + pad + k * rowH + rowH / 2 - 2;
+        const S = sprites.S * 0.9;
+        ctx.drawImage(sprites.list[c.m * 3 + c.c][k & 3], (x + pad + 10) * dpr - S / 2, yy * dpr - S / 2, S, S);
+        ctx.fillStyle = '#1d2027'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(L(c), (x + pad + 26) * dpr, yy * dpr);
+      });
+      // légende « fig. » sous la figure
+      if (!view.mobile) {
+        const label = `fig. ${pad2(figNum)} — ${L(target.fig.fig)}`;
+        ctx.globalAlpha = 1;
         ctx.font = `700 ${27 * dpr}px Caveat, "Segoe Print", cursive`;
-        ctx.fillStyle = 'rgba(29,32,39,.82)';
-        ctx.translate(x - r * 0.7, y + r + 44 * dpr);
-        ctx.rotate(-0.035);
+        const lx = view.cx - r * 0.95, ly = Math.min(view.cy + r * 1.75, H - 64);
+        ctx.translate(lx * dpr, ly * dpr);
+        ctx.rotate(-0.03);
+        ctx.fillStyle = 'rgba(29,32,39,.85)';
         ctx.fillText(label, 0, 0);
-        const w = ctx.measureText(label).width;
+        const lw = ctx.measureText(label).width;
         ctx.strokeStyle = 'rgba(232,89,12,.75)'; ctx.lineWidth = 2.2 * dpr; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(0, 9 * dpr); ctx.quadraticCurveTo(w * 0.5, 14 * dpr, w, 6 * dpr); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, 14 * dpr); ctx.quadraticCurveTo(lw * 0.5, 19 * dpr, lw, 11 * dpr); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    const pad2 = n => String(n).padStart(2, '0');
+    function drawLegendRow(cls, e) {
+      ctx.save();
+      ctx.globalAlpha = 0.35 + 0.65 * clamp(e * 2 - 1, 0, 1);
+      ctx.font = `700 ${15 * dpr}px Caveat, "Segoe Print", cursive`;
+      ctx.fillStyle = '#1d2027'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      const S = sprites.S * 0.8;
+      let x = 20, y = view.top;
+      for (const [k, c] of cls.entries()) {
+        const w = ctx.measureText(L(c)).width / dpr + 30;
+        if (x + w > W - 12 && x > 20) { x = 20; y += 20; }
+        ctx.drawImage(sprites.list[c.m * 3 + c.c][k & 3], (x + 6) * dpr - S / 2, y * dpr - S / 2, S, S);
+        ctx.fillText(L(c), (x + 16) * dpr, y * dpr);
+        x += w;
       }
       ctx.restore();
     }
@@ -828,7 +1096,7 @@
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
       const moving = draw(dt);
       const pointerActive = ptr.x > -999;
-      if (visible && (!motionPaused || moving > 0 || pointerActive || Math.abs(tiltX - ptr.ty * 0.35) > 0.001)) raf = requestAnimationFrame(frame);
+      if (visible && (!motionPaused || moving > 0 || pointerActive || Math.abs(tiltX - ptr.ty * 0.3) > 0.001)) raf = requestAnimationFrame(frame);
     }
     function kick() { if (!raf && visible) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 
@@ -841,7 +1109,12 @@
       kick();
     }, { passive: true });
     section.addEventListener('pointerleave', () => { ptr.x = ptr.y = -9999; ptr.tx = ptr.ty = 0; kick(); });
-    new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) kick(); }, { rootMargin: '10% 0px' }).observe(section);
+    let intro = true;
+    new IntersectionObserver(([en]) => {
+      visible = en.isIntersecting;
+      if (visible && intro) { intro = false; if (target === g0) tStart = performance.now(); }
+      if (visible) kick();
+    }, { rootMargin: '10% 0px' }).observe(section);
     window.addEventListener('resize', resize);
     resize();
 
@@ -851,13 +1124,12 @@
       kick,
       setLabel(i) {
         figNum = i < 0 ? 0 : i + 1;
-        figName = i < 0 ? 'globe' : DATA.talks[i].shape;
         draw(0);
         const el = $('#stageLabel');
         if (i < 0) { el.innerHTML = `<b>${pad(DATA.talks.length)}</b> · ${esc(t('stageIntro'))}`; return; }
         const k = DATA.talks[i];
         el.innerHTML = `<b>${pad(i + 1)} / ${pad(DATA.talks.length)}</b> · ` +
-          (window.innerWidth < 760 ? `fig. ${esc(L(FIG[k.shape]))}` : esc(L(DATA.themes[k.theme])));
+          (window.innerWidth < 760 ? `fig. ${esc(L(FIGS[k.shape].fig))}` : esc(L(DATA.themes[k.theme])));
       },
       stage
     };
@@ -868,7 +1140,7 @@
     if (i === activeIndex) return;
     activeIndex = i;
     $$('.talk-card').forEach(c => c.classList.toggle('active', +c.dataset.index === i));
-    if (cloud) { cloud.setShape(i < 0 ? 'globe' : DATA.talks[i].shape); cloud.setLabel(i); }
+    if (cloud) { cloud.setShape(i < 0 ? 'clusters' : DATA.talks[i].shape); cloud.setLabel(i); }
   }
   function observeCards() {
     if (cardObserver) cardObserver.disconnect();
@@ -921,7 +1193,23 @@
   }
 
   /* ================= 6. Démarrage ================= */
+  // Logo manquant : on affiche le nom de l'établissement (sans gestionnaire en ligne, compatible CSP)
+  function watchLogos() {
+    const missing = img => {
+      if (img.classList.contains('brand-logo')) { img.style.display = 'none'; return; }
+      const li = img.parentNode;
+      li.classList.add('missing');
+      li.dataset.name = img.alt;
+      img.style.display = 'none';
+    };
+    $$('.brand-logo, .logos img').forEach(img => {
+      if (img.complete && !img.naturalWidth) missing(img);
+      else img.addEventListener('error', () => missing(img), { once: true });
+    });
+  }
+
   function start() {
+    watchLogos();
     try { cloud = initCloud(); } catch (e) { console.warn('Nuage de points indisponible', e); }
     renderAll();
     bindProgramme();
