@@ -1,174 +1,194 @@
 <!DOCTYPE html>
-
 <html lang="fr">
-
 <head>
-    <meta charset="UTF-8">
-
-    <meta 
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>École d'automne Data Science</title>
-
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>École d’automne Data Science — Institut Agro Rennes</title>
+  <meta name="description" content="Quatrième édition de l’école d’automne Data Science de l’Institut Agro Rennes : huit projets étudiants de Machine Learning appliqués au vivant. Entrée libre.">
+  <meta name="theme-color" content="#f4f1ea">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="assets/video/poster-debut.jpg">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <a class="skip" href="#programme" data-i18n="skip">Aller au programme</a>
 
-    <header>
+  <header class="site-header" id="top">
+    <a class="brand" href="#top" aria-label="Accueil">
+      <img class="brand-logo" src="assets/logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.remove()">
+      <span class="brand-text">
+        <strong data-i18n="brand">École d’automne Data Science</strong>
+        <small data-i18n="brandSub">4ᵉ édition · 2026</small>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#projets" data-i18n="navProjects">Projets</a>
+      <a href="#programme" data-i18n="navProgramme">Programme</a>
+      <a href="#infos" data-i18n="navInfo">Infos pratiques</a>
+      <a href="#apropos" data-i18n="navAbout">À propos</a>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn" id="motionToggle" type="button" aria-pressed="false" data-i18n-title="motionPause" title="Mettre les animations en pause">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h3v14H7zM14 5h3v14h-3z"/><path class="i-play" d="M8 5l11 7-11 7z"/></svg>
+      </button>
+      <button class="lang-btn" id="langToggle" type="button" aria-label="Switch to English">EN</button>
+    </div>
+  </header>
 
-        <div class="container header-content">
-        
-            <p>
-            Institut Agro Rennes
-            </p>
-
-            <nav>
-                <a class="btn" href="#presentation">Présentation</a>
-                <a class="btn" href="#programme">Programme</a>
-                <a class="btn" href="#venir">Venir</a>
-
-            </nav>
+  <main>
+    <!-- 1. Vol vers le campus : la vidéo avance avec le défilement -->
+    <section class="flight" id="vol" aria-label="Vol vers le campus">
+      <div class="flight-sticky">
+        <div class="flight-media">
+          <img class="flight-poster" id="flightPoster" src="assets/video/poster-debut.jpg" alt="">
+          <video class="flight-video" id="flightVideo" muted playsinline preload="none" aria-hidden="true"></video>
+          <div class="flight-shade"></div>
         </div>
-    </header>
+        <p class="attribution">Google Earth</p>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>
-                    École d'automne
-                    <br>
-                    Data Science
-                </h1>
-
-                <p>
-                    Une journée consacrée à la Data Science,
-                    au Machine Learning et à l'Intelligence artificielle.
-                </p>
-
-                <p class="jaune">Machine Learning • Intelligence artificielle • Data Science</p>
-
-                <p>Institut Agro Rennes-Angers</p>
-
-                <a href="#programme">Découvrir le programme</a>
-
-            </div>
-        </section>
-
-        <section id="presentation">
-            <div class="container">
-                <h2>L'école d'Automne</h2>
-
-                <p>
-                    L'École d'automne Data Science réunit étudiants,
-                    chercheurs et professionnels autour des méthodes
-                    modernes d'analyse de données.
-                </p>
-
-            </div>
-        </section>
-
-        <section id="programme">
-            <div class="container">
-                <h2>Programme</h2>
-
-                <p class="section-intro">
-                    Découvrez une sélection de conférences autour
-                    de la Data Science et de l'intelligence artificielle.
-                </p>
-
-                <div class="programme-grid">
-                    <article class="card">
-                        <p class="card-theme">Machine Learning</p>
-
-                        <h3>
-                            Introduction au Machine Learning
-                        </h3>
-
-                        <p>
-                            Découverte des principales méthodes
-                            d'apprentissage automatique.
-                        </p>
-                    </article>
-
-                    <article class="card">
-                        <p class="card-theme">Deep Learning</p>
-
-                        <h3>
-                            Réseaux de neurones et vision
-                        </h3>
-
-                        <p>
-                            Comprendre les bases du Deep Learning
-                            appliqué aux images.
-                        </p>
-                    </article>
-
-                    <article class="card">
-                        <p class="card-theme">Data Science</p>
-
-                        <h3>
-                            Visualisation et exploration des données
-                        </h3>
-
-                        <p>
-                            Transformer des données complexes
-                            en informations compréhensibles.
-                        </p>
-                    </article>
-            </div>
-        </section>
-
-        <section id="venir">
-            <div class="container">
-                <h2>Venir</h2>
-
-                <p>
-                    Institut Agro Rennes-Angers
-                </p>
-            </div>
-        </section>
-
-        <section class="infos">
-            <div class="container">
-                <div class="infos-grid">
-                    <div class="info-item">
-                        <p class="info-label">Quand</p>
-                        <p>12 novembre 2026</p>
-                    </div>
-
-                    <div class="info-item">
-                        <p class="info-label">Où</p>
-                        <p>Institut Agro Rennes</p>
-                    </div>
-
-                    <div class="info-item">
-                        <p class="info-label">Format</p>
-                        <p>Présentiel</p>
-                    </div>
-
-                    <div class="info-item">
-                        <p class="info-label">Pour qui</p>
-                        <p>Ouvert au grand public</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>
-                Institut Agro Rennes-Angers
-            </p>
+        <div class="beat beat-1" data-from="0" data-to="0.27">
+          <p class="kicker mono" data-i18n="heroKicker">4ᵉ édition · Institut Agro Rennes</p>
+          <h1 class="hero-title"><span data-i18n="heroTitleA">École d’automne</span><br><em>Data Science</em></h1>
         </div>
-    </footer>
+        <div class="beat beat-2" data-from="0.3" data-to="0.58">
+          <p class="beat-big" data-i18n-html="beat2">Huit projets étudiants de <em>Machine Learning</em> appliqués au vivant.</p>
+        </div>
+        <div class="beat beat-3" data-from="0.62" data-to="0.86">
+          <p class="kicker mono" data-i18n="beat3Kicker">Un après-midi de conférences</p>
+          <p class="beat-big" id="beat3Line">13h30 – 16h30 · Salle D4</p>
+        </div>
+        <div class="beat beat-4" data-from="0.88" data-to="1.01">
+          <p class="beat-big" data-i18n="beat4">Rendez-vous ici.</p>
+          <a class="btn btn-primary" href="#projets" data-i18n="beat4Cta">Découvrir les projets</a>
+        </div>
 
-    
+        <div class="scroll-hint" id="scrollHint" aria-hidden="true">
+          <span data-i18n="scrollHint">Faites défiler</span>
+          <i></i>
+        </div>
+        <div class="flight-progress" aria-hidden="true"><i id="flightBar"></i></div>
+      </div>
+    </section>
 
+    <!-- 2. Les projets : un nuage de points 3D change de forme pour chaque conférence -->
+    <section class="projects" id="projets" aria-labelledby="projectsTitle">
+      <div class="projects-stage" aria-hidden="true">
+        <canvas id="cloud"></canvas>
+        <div class="stage-label mono" id="stageLabel"></div>
+      </div>
+      <div class="projects-track">
+        <header class="section-head projects-head">
+          <p class="kicker mono" data-i18n="projectsKicker">Au programme</p>
+          <h2 id="projectsTitle" data-i18n="projectsTitle">Des projets étudiants en Machine Learning</h2>
+          <p class="lead" data-i18n="projectsLead">Chaque groupe présente le problème étudié, les données utilisées et les modèles qu’il a construits. Questions comprises dans le temps de passage.</p>
+        </header>
+        <ol class="talk-cards" id="talkCards"></ol>
+      </div>
+    </section>
+
+    <!-- 3. Programme complet -->
+    <section class="programme" id="programme" aria-labelledby="programmeTitle">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker mono" data-i18n="programmeKicker">Programme</p>
+          <h2 id="programmeTitle" data-i18n="programmeTitle">L’après-midi en détail</h2>
+          <p class="notice" id="programmeNotice" data-i18n="programmeNotice">Programme provisoire : l’ordre de passage et les résumés seront publiés prochainement.</p>
+        </header>
+
+        <div class="live-banner" id="liveBanner" hidden></div>
+
+        <div class="toolbar" role="search">
+          <label class="field field-search">
+            <span class="sr-only" data-i18n="searchLabel">Rechercher</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <input id="search" type="search" autocomplete="off" data-i18n-placeholder="searchPlaceholder" placeholder="Sujet, intervenant, thème…">
+          </label>
+          <label class="field">
+            <span class="sr-only" data-i18n="themeLabel">Thème</span>
+            <select id="themeFilter"></select>
+          </label>
+          <button class="chip" id="favFilter" type="button" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>
+            <span data-i18n="favFilter">Mes favoris</span>
+          </button>
+          <span class="count mono" id="resultCount" aria-live="polite"></span>
+          <span class="toolbar-spacer"></span>
+          <button class="btn btn-ghost" id="printBtn" type="button" data-i18n="print">Imprimer / PDF</button>
+          <button class="btn btn-ghost" id="icsBtn" type="button" data-i18n="calendar">Ajouter au calendrier</button>
+        </div>
+
+        <ol class="talk-list" id="talkList"></ol>
+        <p class="empty" id="emptyState" hidden data-i18n="empty">Aucune conférence ne correspond à cette recherche.</p>
+      </div>
+    </section>
+
+    <!-- 4. Infos pratiques -->
+    <section class="info" id="infos" aria-labelledby="infoTitle">
+      <div class="wrap">
+        <header class="section-head">
+          <p class="kicker mono" data-i18n="infoKicker">Infos pratiques</p>
+          <h2 id="infoTitle" data-i18n="infoTitle">Venir à l’Institut Agro</h2>
+        </header>
+        <dl class="facts" id="facts"></dl>
+        <div class="route">
+          <p class="address" id="address"></p>
+          <div class="route-links">
+            <a class="btn btn-primary" id="gmapsLink" target="_blank" rel="noopener" data-i18n="gmaps">Itinéraire Google Maps</a>
+            <a class="btn btn-ghost" id="wazeLink" target="_blank" rel="noopener" data-i18n="waze">Itinéraire Waze</a>
+          </div>
+        </div>
+        <figure class="campus-map">
+          <div class="map-frame" id="mapFrame">
+            <div class="map-frame-inner">
+              <img src="assets/plan-campus.png" width="720" height="405" loading="lazy" data-i18n-alt="mapAlt" alt="Plan du campus de Rennes de l’Institut Agro, avec le bâtiment 24 signalé">
+              <span class="map-marker" aria-hidden="true"><span class="map-tag" data-i18n="mapTag">Bât. 24 · Salle D4</span></span>
+            </div>
+          </div>
+          <figcaption class="map-caption">
+            <span><span class="dot" style="background:var(--teal)"></span><b data-i18n="mapConf">Conférences</b> · <span data-i18n="mapConfWhere">bâtiment 24, salle D4</span></span>
+            <span><b data-i18n="mapEntry">Entrée</b> · 65 rue de Saint-Brieuc</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 5. À propos -->
+    <section class="about" id="apropos" aria-labelledby="aboutTitle">
+      <div class="wrap about-grid">
+        <header class="section-head">
+          <p class="kicker mono" data-i18n="aboutKicker">À propos</p>
+          <h2 id="aboutTitle" data-i18n="aboutTitle">Le cadre de l’école d’automne</h2>
+        </header>
+        <div class="about-text">
+          <p data-i18n="about1">L’école d’automne clôt les enseignements de Machine Learning et de Computer Science for Big Data Approaches. Les étudiants de Master 2 et les élèves ingénieurs en spécialisation Sciences des données y présentent les projets menés en groupe.</p>
+          <p data-i18n="about2">Les sujets portent sur des données issues des sciences du vivant : santé, environnement, agronomie et chimie. Chaque présentation expose la question posée, les données, les modèles et leurs limites.</p>
+          <p data-i18n="about3">Les conférences sont ouvertes à tous, sans inscription.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <p class="footer-title" data-i18n="brand">École d’automne Data Science</p>
+        <p class="muted" data-i18n="footerFrame">Master 2 et spécialisation ingénieur Sciences des données</p>
+      </div>
+      <ul class="logos" aria-label="Établissements">
+        <li><img src="assets/logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
+        <li><img src="assets/logos/Ensai-logo.png" alt="ENSAI" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
+        <li><img src="assets/logos/Logo_univ-rennes2-2016.svg" alt="Université Rennes 2" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
+      </ul>
+      <div class="footer-notes muted">
+        <p data-i18n="footerFav">Vos favoris sont conservés uniquement dans ce navigateur.</p>
+        <p data-i18n="footerCredit">Vol aérien réalisé avec Google Earth Studio.</p>
+      </div>
+    </div>
+  </footer>
+
+  <aside class="toast" id="toast" role="status" aria-live="polite"></aside>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
 </body>
-
 </html>
