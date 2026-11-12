@@ -13,16 +13,25 @@ Site statique, sans framework ni compilation : HTML, CSS et JavaScript natif.
 | `assets/video/` | Vol Google Earth encodé pour le défilement + images de secours |
 | `assets/logos/` | Logos à copier (voir ci-dessous) |
 
-## À faire avant publication
+## Style
 
-1. **Logos** : copier dans `assets/logos/` les fichiers de l’ancien site :
-   `Logo_Institut_Agro_Rennes-Angers.png`, `Ensai-logo.png`, `Logo_univ-rennes2-2016.svg`.
-   Tant qu’ils manquent, le pied de page affiche les noms en texte.
-2. **Résumés** : compléter pour chaque conférence `summary.fr` / `summary.en` dans `data.js`.
-   Quand tous sont renseignés, la mention « Les résumés seront publiés prochainement » disparaît.
+Thème « conceptual sketch » : papier quadrillé, bordures à main levée, titres manuscrits
+(polices Google Fonts **Kalam** et **Caveat**, chargées en ligne), surlignage au marqueur,
+annotations fléchées et figures 3D légendées « fig. 01 … ». Les couleurs sont des variables
+en tête de `style.css` (encre, orange Institut Agro, vert d’eau).
 
-Date (20 novembre 2026), salle (D4, bâtiment 24) et créneaux de 20 minutes sont déjà renseignés
-dans `data.js`. L’ordre du tableau `talks` est l’ordre affiché.
+## Logos
+
+Les logos sont lus dans le dossier `logos/` :
+`Logo_Institut_Agro_Rennes-Angers.png` (en-tête et pied de page), `Logo_ENSAI.png`,
+`Logo_univ-rennes2-2016.svg`.
+
+## Données
+
+Date (20 novembre 2026, 13h30 – 16h30), salle (D4, bâtiment 24) et créneaux de 20 minutes
+sont renseignés dans `data.js`. L’ordre du tableau `talks` est l’ordre affiché.
+Il reste à compléter `summary.fr` / `summary.en` pour chaque conférence : la mention
+« Les résumés seront publiés prochainement » disparaît quand tous sont remplis.
 
 Le plan du campus est `assets/plan-campus.png`. Le repère du bâtiment 24 est positionné en
 pourcentage dans `style.css` (`.map-marker { left: 76.1%; top: 44.4%; }`).
@@ -40,7 +49,7 @@ le navigateur charge la vidéo moins bien.
 ```bash
 git init && git add . && git commit -m "Site école d'automne 2026"
 git branch -M main
-git remote add origin git@github.com:AntoninR-cmd/ecole-automne-2026.git
+git remote add origin https://github.com/AntoninR-cmd/ecole_automne2.git
 git push -u origin main
 ```
 Puis sur GitHub : *Settings → Pages → Deploy from a branch → main / (root)*.

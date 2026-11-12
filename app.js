@@ -36,13 +36,14 @@
       beat4Cta: 'Découvrir les projets',
       scrollHint: 'Faites défiler',
       projectsKicker: 'Au programme',
-      projectsTitle: 'Des projets étudiants en Machine Learning',
+      projectsTitle: 'Des projets étudiants en <em>Machine Learning</em>',
+      noteProjects: '8 projets · 20 min chacun', noteFav: '☆ pour garder vos conférences',
       projectsLead: 'Chaque groupe présente le problème étudié, les données utilisées et les modèles qu’il a construits. Les questions sont comprises dans le temps de passage.',
       programmeKicker: 'Programme',
-      programmeTitle: 'L’après-midi en détail',
+      programmeTitle: 'L’après-midi <em>en détail</em>',
       programmeNotice: 'Les résumés des projets seront publiés prochainement.',
       mapAlt: 'Plan du campus de Rennes de l’Institut Agro, avec le bâtiment 24 signalé',
-      mapTag: 'Bât. 24 · Salle D4', mapConf: 'Conférences', mapConfWhere: 'bâtiment 24, salle D4', mapEntry: 'Entrée',
+      mapTag: 'c’est ici ! Bât. 24 · Salle D4', mapConf: 'Conférences', mapConfWhere: 'bâtiment 24, salle D4', mapEntry: 'Entrée',
       searchLabel: 'Rechercher', searchPlaceholder: 'Sujet, intervenant, thème…',
       themeLabel: 'Thème', allThemes: 'Tous les thèmes',
       favFilter: 'Mes favoris',
@@ -57,12 +58,12 @@
       live: 'En cours',
       liveEvent: room => `L’école d’automne a lieu en ce moment · ${room}`,
       liveTalk: (title, room) => `En ce moment · ${title} · ${room}`,
-      infoKicker: 'Infos pratiques', infoTitle: 'Venir à l’Institut Agro',
+      infoKicker: 'Infos pratiques', infoTitle: 'Venir à l’<em>Institut Agro</em>',
       factDate: 'Date', factTime: 'Horaires', factPlace: 'Lieu', factEntry: 'Entrée',
       toConfirm: 'À confirmer',
       entry: 'Libre', entrySub: 'Ouvert à tous, sans inscription',
       gmaps: 'Itinéraire Google Maps', waze: 'Itinéraire Waze',
-      aboutKicker: 'À propos', aboutTitle: 'Le cadre de l’école d’automne',
+      aboutKicker: 'À propos', aboutTitle: 'Le cadre de l’<em>école d’automne</em>',
       about1: 'L’école d’automne s’inscrit dans les enseignements de Machine Learning et de Computer Science for Big Data Approaches. Les étudiants de Master 2 et les élèves ingénieurs en spécialisation Sciences des données y présentent les projets menés en groupe.',
       about2: 'Les sujets portent sur des données issues des sciences du vivant : santé, environnement, agronomie et chimie. Chaque présentation expose la question posée, les données, les modèles et leurs limites.',
       about3: 'Les conférences sont ouvertes à tous, sans inscription.',
@@ -88,13 +89,14 @@
       beat4Cta: 'Discover the projects',
       scrollHint: 'Scroll',
       projectsKicker: 'On the programme',
-      projectsTitle: 'Student projects in machine learning',
+      projectsTitle: 'Student projects in <em>machine learning</em>',
+      noteProjects: '8 projects · 20 min each', noteFav: '☆ to keep your talks',
       projectsLead: 'Each group presents the problem it studied, the data it used and the models it built. Questions are included in each slot.',
       programmeKicker: 'Programme',
-      programmeTitle: 'The afternoon in detail',
+      programmeTitle: 'The afternoon <em>in detail</em>',
       programmeNotice: 'Project abstracts will be published soon.',
       mapAlt: 'Map of the Institut Agro Rennes campus, with building 24 highlighted',
-      mapTag: 'Bldg 24 · Room D4', mapConf: 'Talks', mapConfWhere: 'building 24, room D4', mapEntry: 'Entrance',
+      mapTag: 'it’s here! Bldg 24 · Room D4', mapConf: 'Talks', mapConfWhere: 'building 24, room D4', mapEntry: 'Entrance',
       searchLabel: 'Search', searchPlaceholder: 'Topic, speaker, theme…',
       themeLabel: 'Theme', allThemes: 'All themes',
       favFilter: 'My favourites',
@@ -109,12 +111,12 @@
       live: 'Live',
       liveEvent: room => `The autumn school is happening now · ${room}`,
       liveTalk: (title, room) => `Now · ${title} · ${room}`,
-      infoKicker: 'Practical info', infoTitle: 'Getting to Institut Agro',
+      infoKicker: 'Practical info', infoTitle: 'Getting to <em>Institut Agro</em>',
       factDate: 'Date', factTime: 'Time', factPlace: 'Venue', factEntry: 'Admission',
       toConfirm: 'To be confirmed',
       entry: 'Free', entrySub: 'Open to all, no registration',
       gmaps: 'Directions in Google Maps', waze: 'Directions in Waze',
-      aboutKicker: 'About', aboutTitle: 'About the autumn school',
+      aboutKicker: 'About', aboutTitle: 'About the <em>autumn school</em>',
       about1: 'The autumn school is part of the Machine Learning and Computer Science for Big Data Approaches courses. Second-year master’s students and engineering students specialising in data science present their group projects.',
       about2: 'The topics use data from the life sciences: health, environment, agronomy and chemistry. Each talk covers the question, the data, the models and their limits.',
       about3: 'The talks are open to everyone, with no registration.',
@@ -134,7 +136,7 @@
   function applyStaticTexts() {
     document.documentElement.lang = lang;
     document.title = t('docTitle');
-    $('#programme').dataset.printTitle = t('docTitle');
+    $('#printTitle').textContent = t('docTitle');
     $$('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
     $$('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
     $$('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
@@ -663,6 +665,20 @@
     }
   };
 
+  // Couleurs propres à certaines formes (0 encre, 1 vert d'eau, 2 orange)
+  const COLOR_MAP = { flame: [2, 2, 0], fracture: [0, 2, 2], spectrogram: [1, 1, 0], vessels: [2, 2, 1] };
+  const FIG = {
+    globe: { fr: 'le réseau des huit projets', en: 'the eight projects' },
+    molecule: { fr: 'molécule inconnue', en: 'unknown molecule' },
+    knee: { fr: 'genou du coureur', en: 'a runner’s knee' },
+    bacteria: { fr: 'bactérie résistante', en: 'resistant bacterium' },
+    flame: { fr: 'départ de feu', en: 'fire outbreak' },
+    fracture: { fr: 'fracture détectée', en: 'detected fracture' },
+    seed: { fr: 'graines', en: 'seeds' },
+    spectrogram: { fr: 'spectrogramme d’un chant', en: 'birdsong spectrogram' },
+    vessels: { fr: 'vaisseaux du foie', en: 'liver vessels' }
+  };
+
   function buildShape(name, N, seed) {
     const R = rng(seed);
     const saved = Math.random; Math.random = R;      // formes reproductibles
@@ -673,7 +689,8 @@
     let k = 0;
     parts.forEach(([w, c, gen], j) => {
       const n = j === parts.length - 1 ? N - k : Math.round(N * w / total);
-      for (let i = 0; i < n && k < N; i++, k++) { const p = gen(); pos[k * 3] = p[0]; pos[k * 3 + 1] = p[1]; pos[k * 3 + 2] = p[2]; col[k] = c; }
+      const cm = COLOR_MAP[name];
+      for (let i = 0; i < n && k < N; i++, k++) { const p = gen(); pos[k * 3] = p[0]; pos[k * 3 + 1] = p[1]; pos[k * 3 + 2] = p[2]; col[k] = cm ? cm[c] : c; }
     });
     for (; k < N; k++) { const p = G.sphere([0, 0, 0], 1); pos.set(p, k * 3); col[k] = 0; }
     // Mélange : les points changent de place pendant les transitions
@@ -705,9 +722,9 @@
     for (let i = 0; i < N * 3; i++) cur[i] *= 3 + Math.random() * 2;    // arrivée depuis l'extérieur
     let target = g0, colors = new Uint8Array(g0.col);
     const speed = new Float32Array(N).map(() => 0.035 + Math.random() * 0.05);
-    const COLORS = [[232, 89, 12], [31, 157, 139], [22, 24, 29]];   // orange, vert d'eau, encre
+    const COLORS = [[29, 32, 39], [31, 157, 139], [232, 89, 12]];   // encre, vert d'eau, orange
     const LEVELS = 8;
-    const styles = COLORS.map(c => [...Array(LEVELS)].map((_, l) => `rgba(${c[0]},${c[1]},${c[2]},${(0.14 + 0.8 * (l + 1) / LEVELS).toFixed(3)})`));
+    const styles = COLORS.map(c => [...Array(LEVELS)].map((_, l) => `rgba(${c[0]},${c[1]},${c[2]},${(0.12 + 0.82 * (l + 1) / LEVELS).toFixed(3)})`));
     const buckets = [...Array(3 * LEVELS)].map(() => ({ xs: new Float32Array(N), ys: new Float32Array(N), ss: new Float32Array(N), n: 0 }));
 
     let W = 0, H = 0, dpr = 1, rotY = 0.6, rotX = -0.18, tiltX = 0, tiltY = 0, ptr = { x: -9999, y: -9999, tx: 0, ty: 0 };
@@ -766,6 +783,7 @@
         bk.xs[bk.n] = sx; bk.ys[bk.n] = sy; bk.ss[bk.n] = (0.7 + depth * 1.9) * dpr * f; bk.n++;
       }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawFigure(cx * dpr, cy * dpr, scale * dpr, mobile);
       for (let c = 0; c < 3; c++) for (let l = 0; l < LEVELS; l++) {
         const b = buckets[c * LEVELS + l];
         if (!b.n) continue;
@@ -773,6 +791,36 @@
         for (let j = 0; j < b.n; j++) { const s = b.ss[j]; ctx.fillRect(b.xs[j] - s / 2, b.ys[j] - s / 2, s, s); }
       }
       return moving;
+    }
+
+    // Habillage façon croquis : cercle de construction, axes, graduations, légende « fig. »
+    let figNum = 0, figName = 'globe';
+    function drawFigure(x, y, s, mobile) {
+      const r = s * 1.38;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(29,32,39,.28)';
+      ctx.lineWidth = 1.3 * dpr;
+      ctx.setLineDash([7 * dpr, 9 * dpr]);
+      ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.97, -0.05, 0, Math.PI * 2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle = 'rgba(31,157,139,.35)';
+      ctx.beginPath();
+      ctx.moveTo(x - r * 1.12, y); ctx.lineTo(x + r * 1.12, y);
+      ctx.moveTo(x, y - r * 1.1); ctx.lineTo(x, y + r * 1.1);
+      for (let k = -4; k <= 4; k++) { if (!k) continue; const d = k * r / 4; ctx.moveTo(x + d, y - 5 * dpr); ctx.lineTo(x + d, y + 5 * dpr); }
+      ctx.stroke();
+      if (!mobile) {
+        const label = `fig. ${pad(figNum)} — ${L(FIG[figName])}`;
+        ctx.font = `700 ${27 * dpr}px Caveat, "Segoe Print", cursive`;
+        ctx.fillStyle = 'rgba(29,32,39,.82)';
+        ctx.translate(x - r * 0.7, y + r + 44 * dpr);
+        ctx.rotate(-0.035);
+        ctx.fillText(label, 0, 0);
+        const w = ctx.measureText(label).width;
+        ctx.strokeStyle = 'rgba(232,89,12,.75)'; ctx.lineWidth = 2.2 * dpr; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(0, 9 * dpr); ctx.quadraticCurveTo(w * 0.5, 14 * dpr, w, 6 * dpr); ctx.stroke();
+      }
+      ctx.restore();
     }
 
     function frame(now) {
@@ -797,14 +845,19 @@
     window.addEventListener('resize', resize);
     resize();
 
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw(0));
     return {
       setShape,
       kick,
       setLabel(i) {
+        figNum = i < 0 ? 0 : i + 1;
+        figName = i < 0 ? 'globe' : DATA.talks[i].shape;
+        draw(0);
         const el = $('#stageLabel');
         if (i < 0) { el.innerHTML = `<b>${pad(DATA.talks.length)}</b> · ${esc(t('stageIntro'))}`; return; }
         const k = DATA.talks[i];
-        el.innerHTML = `<b>${pad(i + 1)} / ${pad(DATA.talks.length)}</b> · ${esc(L(DATA.themes[k.theme]))}`;
+        el.innerHTML = `<b>${pad(i + 1)} / ${pad(DATA.talks.length)}</b> · ` +
+          (window.innerWidth < 760 ? `fig. ${esc(L(FIG[k.shape]))}` : esc(L(DATA.themes[k.theme])));
       },
       stage
     };

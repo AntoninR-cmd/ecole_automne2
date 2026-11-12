@@ -8,6 +8,9 @@
   <meta name="theme-color" content="#f4f1ea">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="assets/video/poster-debut.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +18,7 @@
 
   <header class="site-header" id="top">
     <a class="brand" href="#top" aria-label="Accueil">
-      <img class="brand-logo" src="assets/logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.remove()">
+      <img class="brand-logo" src="logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.remove()">
       <span class="brand-text">
         <strong data-i18n="brand">École d’automne Data Science</strong>
         <small data-i18n="brandSub">4ᵉ édition · 2026</small>
@@ -47,14 +50,14 @@
         <p class="attribution">Google Earth</p>
 
         <div class="beat beat-1" data-from="0" data-to="0.27">
-          <p class="kicker mono" data-i18n="heroKicker">4ᵉ édition · Institut Agro Rennes</p>
-          <h1 class="hero-title"><span data-i18n="heroTitleA">École d’automne</span><br><em>Data Science</em></h1>
+          <p class="kicker" data-i18n="heroKicker">4ᵉ édition · Institut Agro Rennes</p>
+          <h1 class="hero-title"><span data-i18n="heroTitleA">École d’automne</span><br><em class="scribble">Data Science<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M3 13 C 60 4, 120 18, 180 9 S 270 6, 297 12"/></svg></em></h1>
         </div>
         <div class="beat beat-2" data-from="0.3" data-to="0.58">
           <p class="beat-big" data-i18n-html="beat2">Huit projets étudiants de <em>Machine Learning</em> appliqués au vivant.</p>
         </div>
         <div class="beat beat-3" data-from="0.62" data-to="0.86">
-          <p class="kicker mono" data-i18n="beat3Kicker">Un après-midi de conférences</p>
+          <p class="kicker" data-i18n="beat3Kicker">Un après-midi de conférences</p>
           <p class="beat-big" id="beat3Line">13h30 – 16h30 · Salle D4</p>
         </div>
         <div class="beat beat-4" data-from="0.88" data-to="1.01">
@@ -74,12 +77,13 @@
     <section class="projects" id="projets" aria-labelledby="projectsTitle">
       <div class="projects-stage" aria-hidden="true">
         <canvas id="cloud"></canvas>
-        <div class="stage-label mono" id="stageLabel"></div>
+        <div class="stage-label" id="stageLabel"></div>
       </div>
       <div class="projects-track">
         <header class="section-head projects-head">
-          <p class="kicker mono" data-i18n="projectsKicker">Au programme</p>
-          <h2 id="projectsTitle" data-i18n="projectsTitle">Des projets étudiants en Machine Learning</h2>
+          <p class="kicker" data-i18n="projectsKicker">Au programme</p>
+          <h2 id="projectsTitle" data-i18n-html="projectsTitle">Des projets étudiants en Machine Learning</h2>
+          <p class="note note-projects" aria-hidden="true"><span data-i18n="noteProjects">8 projets · 20 min chacun</span><svg class="arrow" viewBox="0 0 120 60"><path d="M4 40 C 30 10, 70 6, 108 22"/><path d="M96 12 L110 23 L94 30"/></svg></p>
           <p class="lead" data-i18n="projectsLead">Chaque groupe présente le problème étudié, les données utilisées et les modèles qu’il a construits. Questions comprises dans le temps de passage.</p>
         </header>
         <ol class="talk-cards" id="talkCards"></ol>
@@ -89,9 +93,10 @@
     <!-- 3. Programme complet -->
     <section class="programme" id="programme" aria-labelledby="programmeTitle">
       <div class="wrap">
+        <p class="print-title" id="printTitle"></p>
         <header class="section-head">
-          <p class="kicker mono" data-i18n="programmeKicker">Programme</p>
-          <h2 id="programmeTitle" data-i18n="programmeTitle">L’après-midi en détail</h2>
+          <p class="kicker" data-i18n="programmeKicker">Programme</p>
+          <h2 id="programmeTitle" data-i18n-html="programmeTitle">L’après-midi en détail</h2>
           <p class="notice" id="programmeNotice" data-i18n="programmeNotice">Programme provisoire : l’ordre de passage et les résumés seront publiés prochainement.</p>
         </header>
 
@@ -111,12 +116,13 @@
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>
             <span data-i18n="favFilter">Mes favoris</span>
           </button>
-          <span class="count mono" id="resultCount" aria-live="polite"></span>
+          <span class="count" id="resultCount" aria-live="polite"></span>
           <span class="toolbar-spacer"></span>
           <button class="btn btn-ghost" id="printBtn" type="button" data-i18n="print">Imprimer / PDF</button>
           <button class="btn btn-ghost" id="icsBtn" type="button" data-i18n="calendar">Ajouter au calendrier</button>
         </div>
 
+        <p class="note note-fav" aria-hidden="true"><span data-i18n="noteFav">☆ pour garder vos conférences</span><svg class="arrow" viewBox="0 0 80 60"><path d="M6 10 C 40 6, 62 22, 70 50"/><path d="M58 40 L70 52 L76 36"/></svg></p>
         <ol class="talk-list" id="talkList"></ol>
         <p class="empty" id="emptyState" hidden data-i18n="empty">Aucune conférence ne correspond à cette recherche.</p>
       </div>
@@ -126,8 +132,8 @@
     <section class="info" id="infos" aria-labelledby="infoTitle">
       <div class="wrap">
         <header class="section-head">
-          <p class="kicker mono" data-i18n="infoKicker">Infos pratiques</p>
-          <h2 id="infoTitle" data-i18n="infoTitle">Venir à l’Institut Agro</h2>
+          <p class="kicker" data-i18n="infoKicker">Infos pratiques</p>
+          <h2 id="infoTitle" data-i18n-html="infoTitle">Venir à l’Institut Agro</h2>
         </header>
         <dl class="facts" id="facts"></dl>
         <div class="route">
@@ -156,8 +162,8 @@
     <section class="about" id="apropos" aria-labelledby="aboutTitle">
       <div class="wrap about-grid">
         <header class="section-head">
-          <p class="kicker mono" data-i18n="aboutKicker">À propos</p>
-          <h2 id="aboutTitle" data-i18n="aboutTitle">Le cadre de l’école d’automne</h2>
+          <p class="kicker" data-i18n="aboutKicker">À propos</p>
+          <h2 id="aboutTitle" data-i18n-html="aboutTitle">Le cadre de l’école d’automne</h2>
         </header>
         <div class="about-text">
           <p data-i18n="about1">L’école d’automne clôt les enseignements de Machine Learning et de Computer Science for Big Data Approaches. Les étudiants de Master 2 et les élèves ingénieurs en spécialisation Sciences des données y présentent les projets menés en groupe.</p>
@@ -175,9 +181,9 @@
         <p class="muted" data-i18n="footerFrame">Master 2 et spécialisation ingénieur Sciences des données</p>
       </div>
       <ul class="logos" aria-label="Établissements">
-        <li><img src="assets/logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
-        <li><img src="assets/logos/Ensai-logo.png" alt="ENSAI" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
-        <li><img src="assets/logos/Logo_univ-rennes2-2016.svg" alt="Université Rennes 2" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
+        <li><img src="logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
+        <li><img src="logos/Logo_ENSAI.png" alt="ENSAI" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
+        <li><img src="logos/Logo_univ-rennes2-2016.svg" alt="Université Rennes 2" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
       </ul>
       <div class="footer-notes muted">
         <p data-i18n="footerFav">Vos favoris sont conservés uniquement dans ce navigateur.</p>
