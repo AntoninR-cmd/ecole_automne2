@@ -1,0 +1,208 @@
+/* =========================
+   BASE
+   ========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #101010;
+    color: white;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+
+/* =========================
+   LAYOUT
+   ========================= */
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+
+/* =========================
+   HEADER
+   ========================= */
+
+header {
+    padding: 20px 0;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #f8ac00;
+}
+
+
+/* =========================
+   HERO
+   ========================= */
+
+.hero {
+    text-align: center;
+    padding: 100px 0;
+}
+
+h1 {
+    font-size: 60px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.hero p {
+    color: #b7b7b7;
+}
+
+.hero .jaune {
+    color: #f8ac00;
+}
+
+
+/* =========================
+   BOUTONS
+   ========================= */
+
+.btn {
+    display: inline-block;
+    padding: 15px 25px;
+    background-color: #f8ac00;
+    color: #101010;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: white;
+}
+
+
+/* =========================
+   SECTIONS
+   ========================= */
+
+#presentation,
+#programme,
+#venir {
+    padding: 80px 0;
+}
+
+.programme-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    padding: 30px;
+
+    background-color: #1b1b1b;
+
+    border: 1px solid #383838;
+
+    transition: border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card-theme {
+    color: #f8ac00;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+.card h3 {
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 40px;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.section-intro {
+    max-width: 650px;
+    color: #b7b7b7;
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    border-color: #f8ac00;
+    transform: translateY(-4px);
+}
+
+#programme {
+    background-color: #151515;
+}
+
+#presentation,
+#programme,
+#venir {
+    padding: 80px 0;
+    border-color: 1px solid #282828;
+}
+
+@media (max-width: 800px) {
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav {
+        gap: 15px;
+    }
+
+    h1 {
+        font-size: 40px;
+    }
+
+    h2 {font-size: 32px;}
+
+    .programme-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.infos {
+    border-top: 1px solid #282828;
+    border-bottom: 1px solid #282828;
+}
+
+.infos.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.info-item {
+    padding: 20px 30px;
+    border-right: 1px solid #282828;
+}
+
+.info-item:last-child {
+    border-style: none;
+}
+
+.info-item p:last-child {
+    margin: 0;
+}
+
