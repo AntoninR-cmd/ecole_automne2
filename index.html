@@ -5,9 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>École d’automne Data Science — Institut Agro Rennes</title>
   <meta name="description" content="Quatrième édition de l’école d’automne Data Science de l’Institut Agro Rennes : huit projets étudiants de Machine Learning appliqués au vivant. Entrée libre.">
-  <meta name="theme-color" content="#f4f1ea">
+  <meta name="theme-color" content="#f6f3ec">
+  <link rel="canonical" href="https://ecole-automne-data-science.netlify.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:url" content="https://ecole-automne-data-science.netlify.app/">
+  <meta property="og:title" content="École d’automne Data Science — Institut Agro Rennes">
+  <meta property="og:description" content="Huit projets étudiants de Machine Learning appliqués au vivant · 20 novembre 2026, 13h30 – 16h30, salle D4 (bâtiment 24). Entrée libre.">
+  <meta property="og:image" content="https://ecole-automne-data-science.netlify.app/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="assets/video/poster-debut.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@400;700&display=swap">
@@ -18,7 +27,7 @@
 
   <header class="site-header" id="top">
     <a class="brand" href="#top" aria-label="Accueil">
-      <img class="brand-logo" src="logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.remove()">
+      <img class="brand-logo" src="logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" width="88" height="36">
       <span class="brand-text">
         <strong data-i18n="brand">École d’automne Data Science</strong>
         <small data-i18n="brandSub">4ᵉ édition · 2026</small>
@@ -39,28 +48,32 @@
   </header>
 
   <main>
-    <!-- 1. Vol vers le campus : la vidéo avance avec le défilement -->
+    <!-- 1. Vol vers le campus : maquette 3D dessinée (données OpenStreetMap), pilotée par le défilement -->
     <section class="flight" id="vol" aria-label="Vol vers le campus">
+      <span class="snap-point flight-snap" aria-hidden="true"></span>
       <div class="flight-sticky">
         <div class="flight-media">
-          <img class="flight-poster" id="flightPoster" src="assets/video/poster-debut.jpg" alt="">
-          <video class="flight-video" id="flightVideo" muted playsinline preload="none" aria-hidden="true"></video>
-          <div class="flight-shade"></div>
+          <picture>
+            <source media="(orientation: portrait) and (max-width: 900px)" srcset="assets/vol-plan-portrait.webp">
+            <img class="flight-poster" id="flightPoster" src="assets/vol-plan.webp" width="1600" height="1000" alt="" fetchpriority="high">
+          </picture>
+          <canvas class="flight-canvas" id="campusCanvas" aria-hidden="true"></canvas>
+          <div class="flight-labels" id="flightLabels" aria-hidden="true"></div>
         </div>
-        <p class="attribution">Google Earth</p>
+        <p class="attribution">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></p>
 
-        <div class="beat beat-1" data-from="0" data-to="0.27">
+        <div class="beat beat-1" data-from="0" data-to="0.24">
           <p class="kicker" data-i18n="heroKicker">4ᵉ édition · Institut Agro Rennes</p>
           <h1 class="hero-title"><span data-i18n="heroTitleA">École d’automne</span><br><em class="scribble">Data Science<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M3 13 C 60 4, 120 18, 180 9 S 270 6, 297 12"/></svg></em></h1>
         </div>
-        <div class="beat beat-2" data-from="0.3" data-to="0.58">
+        <div class="beat beat-2" data-from="0.3" data-to="0.55">
           <p class="beat-big" data-i18n-html="beat2">Huit projets étudiants de <em>Machine Learning</em> appliqués au vivant.</p>
         </div>
-        <div class="beat beat-3" data-from="0.62" data-to="0.86">
+        <div class="beat beat-3" data-from="0.61" data-to="0.83">
           <p class="kicker" data-i18n="beat3Kicker">Un après-midi de conférences</p>
           <p class="beat-big" id="beat3Line">13h30 – 16h30 · Salle D4</p>
         </div>
-        <div class="beat beat-4" data-from="0.88" data-to="1.01">
+        <div class="beat beat-4" data-from="0.89" data-to="1.01">
           <p class="beat-big" data-i18n="beat4">Rendez-vous ici.</p>
           <a class="btn btn-primary" href="#projets" data-i18n="beat4Cta">Découvrir les projets</a>
         </div>
@@ -181,13 +194,13 @@
         <p class="muted" data-i18n="footerFrame">Master 2 et spécialisation ingénieur Sciences des données</p>
       </div>
       <ul class="logos" aria-label="Établissements">
-        <li><img src="logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
-        <li><img src="logos/Logo_ENSAI.png" alt="ENSAI" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
-        <li><img src="logos/Logo_univ-rennes2-2016.svg" alt="Université Rennes 2" onerror="this.parentNode.classList.add('missing');this.parentNode.dataset.name=this.alt;this.remove()"></li>
+        <li><img src="logos/Logo_Institut_Agro_Rennes-Angers.png" alt="Institut Agro Rennes-Angers" loading="lazy"></li>
+        <li><img src="logos/Logo_ENSAI.png" alt="ENSAI" loading="lazy"></li>
+        <li><img src="logos/Logo_univ-rennes2-2016.svg" alt="Université Rennes 2" loading="lazy"></li>
       </ul>
       <div class="footer-notes muted">
         <p data-i18n="footerFav">Vos favoris sont conservés uniquement dans ce navigateur.</p>
-        <p data-i18n="footerCredit">Vol aérien réalisé avec Google Earth Studio.</p>
+        <p data-i18n-html="footerCredit">Campus en 3D dessiné à partir des données © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">contributeurs OpenStreetMap</a>.</p>
       </div>
     </div>
   </footer>
@@ -196,5 +209,6 @@
 
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script type="module" src="js/campus3d.js"></script>
 </body>
 </html>
