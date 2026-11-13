@@ -56,7 +56,10 @@ window.AUTUMN = {
         en: 'Identifying the most common knee injuries in runners'
       },
       speakers: ['Youri', 'Lilou', 'Charles'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'La foulée trahit-elle un genou blessé ? Détecter les blessures du coureur par apprentissage automatique.\n\nLe genou est l’articulation la plus touchée chez le coureur. Ses deux blessures les plus fréquentes, le syndrome fémoro-patellaire (douleur autour de la rotule) et le syndrome de la bandelette ilio-tibiale (douleur sur la face externe du genou), sont des blessures de surutilisation. La douleur siège au genou, mais une partie de leur origine se trouve à la hanche et au bassin, pendant la phase d’appui.\n\nNous nous sommes demandé si la façon de courir suffit à reconnaître un coureur blessé. Nous avons travaillé sur 587 coureurs filmés en capture de mouvement sur tapis par la Running Injury Clinic de Calgary. Nous avons comparé des modèles d’apprentissage automatique classiques (régression logistique, forêt aléatoire) et des réseaux de neurones, puis regardé sur quelles articulations et quels moments de l’appui ils fondent leurs décisions.',
+        en: 'Does a runner’s stride give away an injured knee? Detecting running injuries with machine learning.\n\nThe knee is the joint most often injured in runners. Its two most common injuries, patellofemoral pain syndrome (pain around the kneecap) and iliotibial band syndrome (pain on the outer side of the knee), are overuse injuries. The pain is felt in the knee, but part of their cause lies in the hip and pelvis during the stance phase.\n\nWe asked whether the way someone runs is enough to recognise an injured runner. We worked with 587 runners recorded with treadmill motion capture by the Running Injury Clinic in Calgary. We compared classical machine learning models (logistic regression, random forest) with neural networks, then looked at which joints and which moments of the stance phase they rely on to make their decisions.'
+      },
       start: '13:50', end: '14:10'
     },
     {
