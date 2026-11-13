@@ -43,7 +43,10 @@ window.AUTUMN = {
         en: 'Identifying unknown molecules from their mass spectra: a machine learning approach'
       },
       speakers: ['Fanny', 'Antonin', 'Inès'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'Identifier une molécule à partir de son spectre de masse est un défi central de la métabolomique : dans un extrait biologique, une grande partie des composés détectés reste inconnue. Dans le cadre de la compétition Kaggle Enveda CASMI 2026, notre projet cherche à prédire la structure chimique d’une molécule à partir de ses spectres MS/MS, c’est-à-dire de la liste des fragments obtenus en la cassant. Toute la difficulté vient du fait que les molécules à identifier sont absentes des données d’apprentissage : un modèle qui reconnaît seulement les molécules déjà vues ne peut donc pas les trouver. Notre approche consiste à apprendre à décrire la molécule par les motifs chimiques qu’elle contient, puis à rechercher, parmi des structures connues de même masse, celles qui correspondent le mieux à cette description.',
+        en: 'Identifying a molecule from its mass spectrum is a central challenge in metabolomics: in a biological extract, a large share of the detected compounds remains unknown. As part of the Kaggle Enveda CASMI 2026 competition, our project aims to predict the chemical structure of a molecule from its MS/MS spectra, that is, the list of fragments obtained by breaking it apart. The main difficulty is that the molecules to be identified are absent from the training data: a model that only recognises molecules it has already seen cannot find them. Our approach is to learn to describe a molecule by the chemical motifs it contains, then to search among known structures of the same mass for those that best match this description.'
+      },
       start: '13:30', end: '13:50'
     },
     {
