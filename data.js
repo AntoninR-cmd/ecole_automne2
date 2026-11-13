@@ -98,7 +98,10 @@ window.AUTUMN = {
         en: 'Automatic detection and localisation of fractures on X-ray images with a YOLO approach'
       },
       speakers: ['Chiara', 'Anatole', 'Augustin C.'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'Ce projet est avant tout méthodologique : il vise à comprendre et expliquer comment faire de la détection d’objets sur des images, en prenant YOLO comme exemple et un jeu de radiographies de fractures du poignet comme cas d’illustration.\n\nNotre démarche s’articule d’abord autour de l’analyse des données d’entrée et de la maîtrise de l’architecture des modèles YOLO. Nous cherchons ensuite à optimiser les performances du modèle en faisant varier les hyper paramètres clefs.',
+        en: 'This project is above all methodological: it aims to understand and explain how to perform object detection on images, using YOLO as an example and a dataset of wrist fracture X-rays as an illustrative case.\n\nOur approach starts with analysing the input data and getting to grips with the architecture of YOLO models. We then seek to optimise the model’s performance by varying its key hyperparameters.'
+      },
       start: '14:50', end: '15:10'
     },
     {
