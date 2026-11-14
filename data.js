@@ -118,8 +118,8 @@ window.AUTUMN = {
       },
       speakers: ['Anton', 'Edgar', 'Augustin B.'],
       summary: {
-        fr: 'L’objectif du projet est de quantifier l’évolution des performances de prédiction d’un réseau de neurones convolutif à mesure que les données à classer s’éloignent des données permettant son entrainement, appliqué à l’archéobotanique.',
-        en: 'The aim of the project is to quantify how the predictive performance of a convolutional neural network changes as the data to be classified move further away from the data it was trained on, applied to archaeobotany.'
+        fr: 'En archéobotanique, identifier les graines retrouvées sur les sites de fouille est long et demande une grande expertise. Les réseaux de neurones convolutifs reconnaissent très bien des images proches de celles qu’ils ont vues à l’entraînement, mais les graines archéologiques diffèrent souvent des collections de référence : carbonisées, fragmentées, photographiées dans d’autres conditions. Notre projet mesure comment les performances de prédiction d’un tel modèle évoluent à mesure que les images à classer s’éloignent de ses données d’entraînement, afin de savoir jusqu’où il reste fiable.',
+        en: 'In archaeobotany, identifying the seeds recovered from excavation sites is slow work that requires considerable expertise. Convolutional neural networks are very good at recognising images close to those they saw during training, but archaeological seeds often differ from reference collections: charred, fragmented, photographed under different conditions. Our project measures how the predictive performance of such a model changes as the images to be classified move further away from its training data, in order to find out how far it remains reliable.'
       },
       start: '15:10', end: '15:30'
     },
