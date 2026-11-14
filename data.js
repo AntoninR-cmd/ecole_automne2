@@ -133,7 +133,10 @@ window.AUTUMN = {
         en: 'Automatic detection of birdsong in audio recordings'
       },
       speakers: ['Tao', 'Quentin', 'Clement'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'Notre projet porte sur le traitement de données audio, à travers de la classification d’enregistrements audio portant sur la présence ou non de chants d’oiseaux. Nous allons donc montrer comment transformer des enregistrements audio en tableau de données classiques contenant des descripteurs auditifs et pouvoir traiter ces données via des méthodes classiques, régression logistique, SVM, forêts aléatoire, méthode de Boosting....',
+        en: 'Our project deals with audio data processing, through the classification of audio recordings according to whether or not they contain birdsong. We will show how to turn audio recordings into a classic data table of auditory descriptors, and how to process these data with classical methods: logistic regression, SVM, random forests, boosting methods…'
+      },
       start: '15:30', end: '15:50'
     },
     {
