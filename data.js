@@ -149,7 +149,10 @@ window.AUTUMN = {
         en: 'Liver Wars: raiders of the lost vessels'
       },
       speakers: ['Hodé', 'Satine', 'Camille'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'LIVERWARS, à la recherche des vaisseaux perdus\nQuel modèle d’intelligence artificielle permet de détecter et localiser un vaisseau sanguin dans un élastogramme hépatique ? En collaboration avec  Echosens, notre projet explore l’apprentissage profond supervisé pour affirmer la présence de vaisseaux et estimer leur profondeur. L’objectif : proposer une aide à la lecture des élastogrammes, en apportant des repères complémentaires à l’interprétation humaine.\nDe la préparation des données à l’évaluation des prédictions sur des examens inconnus, cette démarche associe sciences du vivant, réseaux de neurones et validation statistique.',
+        en: 'LIVERWARS, raiders of the lost vessels\nWhich artificial intelligence model can detect and locate a blood vessel in a liver elastogram? In collaboration with Echosens, our project explores supervised deep learning to confirm the presence of vessels and estimate their depth. The goal: to offer support for reading elastograms, by providing additional landmarks to complement human interpretation.\nFrom data preparation to the evaluation of predictions on unseen examinations, this approach brings together life sciences, neural networks and statistical validation.'
+      },
       start: '15:50', end: '16:10'
     }
   ]
