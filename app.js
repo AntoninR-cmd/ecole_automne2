@@ -656,28 +656,62 @@
       fig: { fr: 'vaisseaux du foie', en: 'liver vessels' },
       classes: [{ m: 0, c: 2, fr: 'vaisseau', en: 'vessel' }, { m: 5, c: 1, fr: 'capillaire', en: 'capillary' }, { m: 1, c: 0, fr: 'contour du foie', en: 'liver outline' }],
       parts(G, R, meta) {
+        // Foie vu de face : gros lobe droit arrondi (x < 0), lobe gauche effilé (x > 0),
+        // dôme sous le diaphragme, face inférieure plus plate qui remonte vers le lobe gauche,
+        // léger creux du ligament falciforme entre les deux lobes.
+        const L = 1.2;
+        const sec = t => {
+          const env = t < 0.3 ? Math.sqrt(Math.max(0, 1 - Math.pow((0.3 - t) / 0.3, 2)))
+                              : Math.pow(Math.max(0, 1 - (t - 0.3) / 0.7), 0.75);
+          const notch = 1 - 0.14 * Math.exp(-Math.pow((t - 0.6) / 0.05, 2));
+          return { cy: -0.08 + 0.3 * t, up: 0.6 * env * notch, dn: 0.32 * env, d: 0.55 * Math.pow(env, 1.3) };
+        };
+        const inside = (p, k) => {
+          const t = (p[0] + L) / (2 * L);
+          if (t <= 0 || t >= 1) return false;
+          const s = sec(t), dy = p[1] - s.cy, h = dy > 0 ? s.up : s.dn;
+          return h > 0.01 && s.d > 0.01 && (dy / h) ** 2 + (p[2] / s.d) ** 2 < k * k;
+        };
+        const surface = () => {
+          for (;;) {
+            const t = R(), s = sec(t);
+            if (R() * 0.95 > s.up + s.dn + s.d) continue;   // densité à peu près uniforme sur la surface
+            const a = R() * Math.PI * 2, sn = Math.sin(a);
+            return [-L + 2 * L * t, s.cy + sn * (sn > 0 ? s.up : s.dn), Math.cos(a) * s.d];
+          }
+        };
+        // Veine porte : entre par le hile sous le foie, se divise en branches droite et gauche
         const Rv = rng(7), segs = [];
-        (function branch(a, dir, len, r, depth) {
+        const hil = sec(0.45), root = [-L + 2 * L * 0.45, hil.cy - hil.dn - 0.12, 0.05];
+        function branch(a, dir, len, r, depth) {
           const b = [a[0] + dir[0] * len, a[1] + dir[1] * len, a[2] + dir[2] * len];
           segs.push([a, b, r]);
           if (depth >= 6) return;
-          const n = depth < 2 ? 2 : (Rv() < 0.7 ? 2 : 3);
+          const dirs = depth === 0 ? [[-0.94, 0.34, 0.05], [0.96, 0.26, -0.05]] : null;
+          const n = dirs ? 2 : (depth < 2 ? 2 : (Rv() < 0.7 ? 2 : 3));
           for (let i = 0; i < n; i++) {
-            const nd = [dir[0] + (Rv() - .5) * 1.3, dir[1] + (Rv() - .5) * 0.9, dir[2] + (Rv() - .5) * 1.3];
-            const l = Math.hypot(...nd);
-            branch(b, nd.map(v => v / l), len * (0.68 + Rv() * 0.12), r * 0.7, depth + 1);
+            const nl = dirs ? (i === 0 ? 0.3 : 0.34) : len * (0.78 + Rv() * 0.12);
+            for (let tries = 0; tries < 16; tries++) {
+              const nd = dirs ? dirs[i] : [dir[0] + (Rv() - .5) * 1.6, dir[1] + (Rv() - .5) * 1.6, dir[2] + (Rv() - .5) * 0.7];
+              const l = Math.hypot(...nd), u = nd.map(v => v / l), k = tries < 8 ? 1 : 0.6;
+              if (dirs || inside([b[0] + u[0] * nl * k, b[1] + u[1] * nl * k, b[2] + u[2] * nl * k], 0.9)) {
+                branch(b, u, nl * (dirs ? 1 : k), r * 0.7, depth + 1);
+                break;
+              }
+            }
           }
-        })([0, -1.0, 0], [0, 1, 0], 0.55, 0.07, 0);
+        }
+        branch(root, [0, 1, 0], 0.32, 0.07, 0);
         meta.lost = segs.filter(s => s[2] < 0.012).reduce((best, s) => (!best || s[1][0] > best[0] ? s[1] : best), null) || segs[segs.length - 1][1];
         const list = segs.map(([a, b, r]) => {
           const l = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
           return [l * (r + 0.02) * 9, r > 0.03 ? 0 : 1, () => G.tube(a, b, r, r * 0.85)];
         });
-        list.push([0.85, 2, () => { const p = G.unit(); return [p[0] * 1.15, p[1] * 0.62 + 0.15, p[2] * 0.55]; }]);
+        list.push([1.4, 2, surface]);
         return list;
       },
       notes: meta => [{ at: meta.lost, fr: 'vaisseau perdu ?', en: 'lost vessel?', o: [36, -84] },
-        { at: [-1.12, 0.3, 0.1], fr: 'foie', en: 'liver', o: [-90, -60] }]
+        { at: [-0.9, 0.42, 0.1], fr: 'foie', en: 'liver', o: [-90, -60] }]
     }
   };
 
