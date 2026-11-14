@@ -111,7 +111,7 @@ window.AUTUMN = {
       id: 'graines',
       shape: 'seed',
       theme: 'agronomie',
-      method: { fr: 'Vision par ordinateur', en: 'Computer vision' },
+      method: { fr: 'Vision par ordinateur · VGG19', en: 'Computer vision · VGG19' },
       title: {
         fr: 'Reconnaissance d’images de graines : jusqu’où un modèle peut-il généraliser ?',
         en: 'Seed image recognition: how far can a model generalise?'
