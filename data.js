@@ -117,7 +117,10 @@ window.AUTUMN = {
         en: 'Seed image recognition: how far can a model generalise?'
       },
       speakers: ['Anton', 'Edgar', 'Augustin B.'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'L’objectif du projet est de quantifier l’évolution des performances de prédiction d’un réseau de neurones convolutif à mesure que les données à classer s’éloignent des données permettant son entrainement, appliqué à l’archéobotanique.',
+        en: 'The aim of the project is to quantify how the predictive performance of a convolutional neural network changes as the data to be classified move further away from the data it was trained on, applied to archaeobotany.'
+      },
       start: '15:10', end: '15:30'
     },
     {
