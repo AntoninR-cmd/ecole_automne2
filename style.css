@@ -253,6 +253,8 @@ em { font-style: normal; }
 .speakers { margin: 0; color: #2b2f37; }
 .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding-top: 14px; border-top: 2px dashed var(--line); }
 .pending { color: var(--muted); font-family: var(--note); font-size: 21px; margin: 0; line-height: 1.1; }
+/* La carte reste dans l'écran : extrait du résumé, le texte complet est dans le programme */
+.card-foot .pending { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; }
 
 .fav-btn {
   display: inline-flex; align-items: center; gap: 8px; border: 2px solid var(--ink); background: var(--panel);
