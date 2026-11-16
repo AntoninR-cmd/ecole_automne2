@@ -75,7 +75,10 @@ window.AUTUMN = {
         en: 'Predicting antibiotic resistance'
       },
       speakers: ['Baptiste', 'Alexandre', 'Benjamin'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'La résistance aux antibiotiques progresse, et E. coli est l’une des bactéries pathogènes les plus concernées. Notre projet cherche à prédire, à partir du seul génome d’une souche, si elle est résistante ou sensible à un antibiotique. Chaque génome est décrit par la présence ou l’absence d’environ 20 000 gènes et par près de 200 mutations connues. Nous partons de la ciprofloxacine, étudiée en détail, puis étendons la démarche à d’autres antibiotiques.\n\nNous comparons des modèles d’apprentissage automatique (régression logistique, Lasso, forêt aléatoire, XGBoost) à un réseau de neurones. Au-delà du score, nous voulons un modèle interprétable et évalué honnêtement : les souches d’une même lignée, presque identiques, restent dans le même jeu de données, pour que le modèle apprenne la résistance au lieu de reconnaître des clones, et nous vérifions que les variables qu’il retient ont un sens biologique.',
+        en: 'Antibiotic resistance is on the rise, and E. coli is one of the pathogenic bacteria most affected. Our project aims to predict, from a strain’s genome alone, whether it is resistant or susceptible to an antibiotic. Each genome is described by the presence or absence of about 20,000 genes and by nearly 200 known mutations. We start with ciprofloxacin, studied in detail, then extend the approach to other antibiotics.\n\nWe compare machine learning models (logistic regression, Lasso, random forest, XGBoost) with a neural network. Beyond the score, we want a model that is interpretable and honestly evaluated: strains from the same lineage, which are almost identical, are kept in the same dataset so that the model learns resistance rather than recognising clones, and we check that the variables it relies on make biological sense.'
+      },
       start: '14:10', end: '14:30'
     },
     {
