@@ -53,7 +53,7 @@
       count: n => n > 1 ? `${n} conférences` : `${n} conférence`,
       fav: 'Favori', favAdd: 'Ajouter aux favoris', favRemove: 'Retirer des favoris',
       favAdded: 'Ajouté à vos favoris', favRemoved: 'Retiré de vos favoris',
-      summary: 'Résumé', summaryPending: 'Résumé à venir.',
+      summary: 'Résumé', summaryPending: 'Résumé à venir.', readSummary: 'Lire le résumé',
       timePending: 'Horaire à confirmer',
       live: 'En cours',
       liveEvent: room => `L’école d’automne a lieu en ce moment · ${room}`,
@@ -106,7 +106,7 @@
       count: n => n > 1 ? `${n} talks` : `${n} talk`,
       fav: 'Favourite', favAdd: 'Add to favourites', favRemove: 'Remove from favourites',
       favAdded: 'Added to your favourites', favRemoved: 'Removed from your favourites',
-      summary: 'Abstract', summaryPending: 'Abstract coming soon.',
+      summary: 'Abstract', summaryPending: 'Abstract coming soon.', readSummary: 'Read the abstract',
       timePending: 'Time to be confirmed',
       live: 'Live',
       liveEvent: room => `The autumn school is happening now · ${room}`,
@@ -225,7 +225,10 @@
           <p class="card-meta">${talkTime(k) ? `<span class="card-time">${esc(talkTime(k))}</span>` : ''}<span class="card-method">${esc(L(k.method))}</span></p>
           <p class="speakers">${esc(speakersText(k.speakers))}</p>
           <div class="card-foot">
-            <p class="pending">${esc(L(k.summary) || t('summaryPending'))}</p>
+            ${L(k.summary) ? `<div class="card-sum">
+              <p class="pending">${esc(L(k.summary))}</p>
+              <a class="card-more" href="#resume-${esc(k.id)}" data-summary="${esc(k.id)}">${esc(t('readSummary'))} →</a>
+            </div>` : `<p class="pending">${esc(t('summaryPending'))}</p>`}
             ${favButton(k.id)}
           </div>
         </article>
@@ -290,7 +293,7 @@
       const time = talkTime(k) || t('timePending');
       const sum = L(k.summary);
       return `
-      <li class="talk-row${live ? ' is-live' : ''}">
+      <li class="talk-row${live ? ' is-live' : ''}" id="resume-${esc(k.id)}">
         <div class="row-grid">
           <span class="row-num">${pad(i + 1)}</span>
           <span class="row-time">${esc(time)}</span>
@@ -334,6 +337,26 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
   }
+
+  // « Lire le résumé » : descend au projet dans le programme et ouvre son résumé complet
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-summary]');
+    if (!a) return;
+    e.preventDefault();
+    const id = a.dataset.summary;
+    if (!document.getElementById('resume-' + id)) {
+      filters.q = ''; filters.theme = ''; filters.fav = false;
+      $('#search').value = ''; $('#themeFilter').value = ''; $('#favFilter').setAttribute('aria-pressed', 'false');
+      renderList();
+    }
+    const row = document.getElementById('resume-' + id);
+    if (!row) return;
+    const d = row.querySelector('details');
+    if (d) d.open = true;
+    row.scrollIntoView({ block: 'start', behavior: 'instant' });   // saut direct : le programme est loin sous les cartes
+    const sm = row.querySelector('summary');
+    if (sm) sm.focus({ preventScroll: true });
+  });
 
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-fav]');

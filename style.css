@@ -255,6 +255,9 @@ em { font-style: normal; }
 .pending { color: var(--muted); font-family: var(--note); font-size: 21px; margin: 0; line-height: 1.1; }
 /* La carte reste dans l'écran : extrait du résumé, le texte complet est dans le programme */
 .card-foot .pending { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; }
+.card-sum { flex: 1; min-width: 0; }
+.card-more { display: inline-block; margin-top: 6px; font-family: var(--note); font-size: 20px; font-weight: 700; color: var(--teal-dark); text-underline-offset: 3px; }
+.card-more:hover { color: var(--accent); }
 
 .fav-btn {
   display: inline-flex; align-items: center; gap: 8px; border: 2px solid var(--ink); background: var(--panel);
