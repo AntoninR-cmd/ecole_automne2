@@ -65,7 +65,7 @@
       gmaps: 'Itinéraire Google Maps', waze: 'Itinéraire Waze',
       aboutKicker: 'À propos', aboutTitle: 'Le cadre de l’<em>école d’automne</em>',
       about1: 'L’école d’automne s’inscrit dans les enseignements de Machine Learning et de Computer Science for Big Data Approaches. Les étudiants de Master 2 et les élèves ingénieurs en spécialisation Sciences des données y présentent les projets menés en groupe.',
-      about2: 'Les sujets portent sur des données issues des sciences du vivant : santé, environnement, agronomie et chimie. Chaque présentation expose la question posée, les données, les modèles et leurs limites.',
+      about2: 'Les sujets portent sur des données issues des sciences du vivant : santé, environnement, archéobotanique et chimie. Chaque présentation expose la question posée, les données, les modèles et leurs limites.',
       about3: 'Les conférences sont ouvertes à tous, sans inscription.',
       footerFrame: 'Master 2 et spécialisation ingénieur Sciences des données',
       footerFav: 'Vos favoris sont conservés uniquement dans ce navigateur.',
@@ -118,7 +118,7 @@
       gmaps: 'Directions in Google Maps', waze: 'Directions in Waze',
       aboutKicker: 'About', aboutTitle: 'About the <em>autumn school</em>',
       about1: 'The autumn school is part of the Machine Learning and Computer Science for Big Data Approaches courses. Second-year master’s students and engineering students specialising in data science present their group projects.',
-      about2: 'The topics use data from the life sciences: health, environment, agronomy and chemistry. Each talk covers the question, the data, the models and their limits.',
+      about2: 'The topics use data from the life sciences: health, environment, archaeobotany and chemistry. Each talk covers the question, the data, the models and their limits.',
       about3: 'The talks are open to everyone, with no registration.',
       footerFrame: 'Master’s degree (year 2) and data science engineering specialisation',
       footerFav: 'Your favourites are only stored in this browser.',
@@ -537,7 +537,7 @@
       fig: { fr: 'huit projets, quatre thèmes', en: 'eight projects, four themes' },
       classes: [
         { m: 0, c: 2, fr: 'santé', en: 'health' }, { m: 1, c: 1, fr: 'environnement', en: 'environment' },
-        { m: 2, c: 0, fr: 'agronomie', en: 'agronomy' }, { m: 4, c: 0, fr: 'chimie', en: 'chemistry' }
+        { m: 2, c: 0, fr: 'archéobotanique', en: 'archaeobotany' }, { m: 4, c: 0, fr: 'chimie', en: 'chemistry' }
       ],
       parts(G) {
         const themes = Object.keys(DATA.themes);

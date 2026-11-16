@@ -26,7 +26,7 @@ window.AUTUMN = {
   themes: {
     sante:         { fr: 'Santé',         en: 'Health' },
     environnement: { fr: 'Environnement', en: 'Environment' },
-    agronomie:     { fr: 'Agronomie',     en: 'Agronomy' },
+    archeobotanique: { fr: 'Archéobotanique', en: 'Archaeobotany' },
     chimie:        { fr: 'Chimie',        en: 'Chemistry' }
   },
 
@@ -91,7 +91,10 @@ window.AUTUMN = {
         en: 'How can heterogeneous data be combined to anticipate wildfire outbreaks?'
       },
       speakers: ['Jules', 'Pierre'],
-      summary: { fr: null, en: null },
+      summary: {
+        fr: 'Notre projet d’apprentissage automatique porte sur 31 530 départs de feu en zone méditerranéenne, survenus entre 2006 et 2024. Parmi ces départs, nous cherchons à prédire ceux qui dépasseront 1 hectare. Pour cela, nous croisons des sources très différentes : météo, végétation, données satellitaires, relief et historique local des feux.\n\nNotre modèle XGBoost atteint une AUC de 0,77 en prédiction temporelle, c’est-à-dire sur des années qu’il n’a pas vues pendant l’entraînement. Nous étudions aussi si ce que le modèle apprend au sud reste valable au nord, et comment les différences entre jeux de données pèsent sur les résultats.',
+        en: 'Our machine learning project covers 31,530 wildfire ignitions in the Mediterranean region between 2006 and 2024. Among these ignitions, we aim to predict those that will grow beyond 1 hectare. To do so, we combine very different sources: weather, vegetation, satellite data, terrain and local fire history.\n\nOur XGBoost model reaches an AUC of 0.77 in temporal prediction, that is, on years it did not see during training. We also study whether what the model learns in the south still holds in the north, and how differences between datasets affect the results.'
+      },
       start: '14:30', end: '14:50'
     },
     {
@@ -113,7 +116,7 @@ window.AUTUMN = {
     {
       id: 'graines',
       shape: 'seed',
-      theme: 'agronomie',
+      theme: 'archeobotanique',
       method: { fr: 'Vision par ordinateur · VGG19', en: 'Computer vision · VGG19' },
       title: {
         fr: 'Reconnaissance d’images de graines : jusqu’où un modèle peut-il généraliser ?',
