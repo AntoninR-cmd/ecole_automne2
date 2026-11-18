@@ -16,7 +16,7 @@ KX = 111320 * math.cos(math.radians(LAT0))
 KY = 110540
 CENTER = (-150.0, 0.0)      # centre de la zone dessinée (m)
 RADIUS = 660.0              # au-delà, rien n'est exporté
-TARGET, MAIN = '24', '11'   # bâtiment des conférences, bâtiment historique
+TARGET, MAIN = '11', '11'   # bâtiment des conférences (Amphi Moule), bâtiment historique
 
 def load(path):
     root = ET.parse(path).getroot()
@@ -239,7 +239,7 @@ def main(src, dst):
         if label == MAIN:
             pitched = True
             wall = 12.5
-        if label == TARGET:
+        if label == '24':                              # hauteur réglée à la main
             wall = 11.0
         if height:
             wall = height * (0.72 if pitched else 1.0)

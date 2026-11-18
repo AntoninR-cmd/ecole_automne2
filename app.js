@@ -42,8 +42,8 @@
       programmeKicker: 'Programme',
       programmeTitle: 'L’après-midi <em>en détail</em>',
       programmeNotice: 'Les résumés des projets seront publiés prochainement.',
-      mapAlt: 'Plan du campus de Rennes de l’Institut Agro, avec le bâtiment 24 signalé',
-      mapTag: 'c’est ici ! Bât. 24 · Salle D4', mapConf: 'Conférences', mapConfWhere: 'bâtiment 24, salle D4', mapEntry: 'Entrée',
+      mapAlt: 'Plan du campus de Rennes de l’Institut Agro, avec le bâtiment 11 signalé',
+      mapTag: 'c’est ici ! Bât. 11 · Amphi Moule', mapConf: 'Conférences', mapConfWhere: 'Amphi Moule, bâtiment 11', mapEntry: 'Entrée',
       searchLabel: 'Rechercher', searchPlaceholder: 'Sujet, intervenant, thème…',
       themeLabel: 'Thème', allThemes: 'Tous les thèmes',
       favFilter: 'Mes favoris',
@@ -95,8 +95,8 @@
       programmeKicker: 'Programme',
       programmeTitle: 'The afternoon <em>in detail</em>',
       programmeNotice: 'Project abstracts will be published soon.',
-      mapAlt: 'Map of the Institut Agro Rennes campus, with building 24 highlighted',
-      mapTag: 'it’s here! Bldg 24 · Room D4', mapConf: 'Talks', mapConfWhere: 'building 24, room D4', mapEntry: 'Entrance',
+      mapAlt: 'Map of the Institut Agro Rennes campus, with building 11 highlighted',
+      mapTag: 'it’s here! Bldg 11 · Amphi Moule', mapConf: 'Talks', mapConfWhere: 'Amphi Moule, building 11', mapEntry: 'Entrance',
       searchLabel: 'Search', searchPlaceholder: 'Topic, speaker, theme…',
       themeLabel: 'Theme', allThemes: 'All themes',
       favFilter: 'My favourites',
@@ -447,7 +447,7 @@
     const sticky = $('.flight-sticky', section);
 
     let target = 0, current = -1, visible = true, raf = 0;
-    const HOLD = 0.16;   // derniers 16 % du défilement : on reste sur le bâtiment 24 (résistance)
+    const HOLD = 0.16;   // derniers 16 % du défilement : on reste sur le bâtiment 11 (résistance)
 
     function rawProgress() {
       const total = section.offsetHeight - sticky.offsetHeight;

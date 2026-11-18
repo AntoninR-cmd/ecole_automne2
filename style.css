@@ -353,7 +353,7 @@ em { font-style: normal; }
 .map-frame { position: relative; }
 .map-frame-inner { position: relative; }
 .map-frame img { width: 100%; height: auto; }
-.map-marker { position: absolute; left: 76.1%; top: 44.4%; width: 0; height: 0; }
+.map-marker { position: absolute; left: 47.9%; top: 61%; width: 0; height: 0; }
 .map-marker::before {
   content: ""; position: absolute; left: -32px; top: -28px; width: 64px; height: 54px;
   border: 3px solid var(--accent); border-radius: 52% 48% 55% 45% / 48% 55% 45% 52%; transform: rotate(-8deg);
@@ -368,11 +368,6 @@ em { font-style: normal; }
   position: absolute; right: 34px; top: -66px; white-space: nowrap; color: var(--accent-dark);
   font-family: var(--note); font-size: 26px; font-weight: 700; line-height: 1; transform: rotate(-5deg);
   background: rgba(255,255,255,.85); padding: 2px 6px;
-}
-.map-tag::after {
-  content: ""; position: absolute; right: -20px; top: 24px; width: 30px; height: 32px;
-  border-right: 2.5px solid var(--accent-dark); border-bottom: 2.5px solid var(--accent-dark); border-radius: 0 0 26px 0;
-  transform: rotate(8deg);
 }
 .map-caption { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 12px 6px 14px; margin-top: 10px; border-top: 2px dashed var(--line); font-size: 15px; color: var(--muted); }
 .map-caption b { color: var(--ink); font-family: var(--hand); }

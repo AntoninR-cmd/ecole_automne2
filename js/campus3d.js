@@ -1,4 +1,4 @@
-/* École d'automne Data Science — vol 3D « croquis » vers le bâtiment 24
+/* École d'automne Data Science — vol 3D « croquis » vers le bâtiment 11 (Amphi Moule)
  *
  * Les bâtiments sont extrudés à partir des emprises OpenStreetMap (assets/campus.json,
  * produit par tools/osm_to_campus.py) puis dessinés comme dans un carnet :
@@ -31,23 +31,23 @@ const DEG = Math.PI / 180;
 const PATH_WIDE = [
   [0.00, -104, -36, 1080, 90, -20, 0],
   [0.14, -96, -28, 880, 82, -22, 0],
-  [0.34, -70, -6, 540, 60, -26, 2],
-  [0.56, -160, 18, 380, 46, -38, 4],
-  [0.80, -306, 46, 215, 35, -50, 6],
-  [1.00, -330, 52, 178, 31, -55, 7]
+  [0.34, -64, -14, 560, 62, -28, 2],
+  [0.56, -38, -2, 390, 47, -40, 5],
+  [0.80, -20, 3, 250, 36, -50, 8],
+  [1.00, -16, 4, 210, 31, -55, 9]
 ];
 const PATH_TALL = [
   [0.00, -120, -10, 1450, 90, -46, 0],
   [0.14, -112, -6, 1180, 82, -46, 0],
-  [0.34, -60, 0, 720, 62, -40, 2],
-  [0.56, -150, 22, 520, 48, -44, 4],
-  [0.80, -316, 48, 380, 37, -58, 6],
-  [1.00, -330, 50, 330, 33, -66, 7]
+  [0.34, -60, -6, 740, 62, -44, 2],
+  [0.56, -34, 0, 540, 48, -50, 5],
+  [0.80, -20, 3, 400, 37, -58, 8],
+  [1.00, -16, 4, 350, 33, -66, 9]
 ];
 
 const TXT = {
-  fr: { street: 'rue de Saint-Brieuc', entry: 'Entrée · 65 rue de Saint-Brieuc', main: 'Bât. 11 · bâtiment historique', here: 'c’est ici !', target: 'Bât. 24 · Salle D4' },
-  en: { street: 'rue de Saint-Brieuc', entry: 'Entrance · 65 rue de Saint-Brieuc', main: 'Bldg 11 · historic building', here: 'it’s here!', target: 'Bldg 24 · Room D4' }
+  fr: { street: 'rue de Saint-Brieuc', entry: 'Entrée · 65 rue de Saint-Brieuc', main: 'Bât. 11 · bâtiment historique', here: 'c’est ici !', target: 'Bât. 11 · Amphi Moule' },
+  en: { street: 'rue de Saint-Brieuc', entry: 'Entrance · 65 rue de Saint-Brieuc', main: 'Bldg 11 · historic building', here: 'it’s here!', target: 'Bldg 11 · Amphi Moule' }
 };
 
 /* ---------- Outils ---------- */
@@ -691,6 +691,9 @@ function buildTrees(data, trunk) {
 function arrowSvg(path, head, cls) {
   return `<svg class="fl-arrow ${cls || ''}" viewBox="0 0 100 100" aria-hidden="true"><path d="${path}"/><path d="${head}"/></svg>`;
 }
+// Pointe de la flèche « c'est ici ! » : l'angle visible, à l'arrière du bât. 11, entre l'aile gauche
+// et la barre transversale (réglé sur la vue finale) · [x est, y nord, hauteur], en m (+ 1 m au placement)
+const TIP = [-25.6, -8.4, 11.5];
 function buildLabels(world) {
   labelLayer.innerHTML = '';
   const list = [];
@@ -706,11 +709,13 @@ function buildLabels(world) {
     { dir: new THREE.Vector3(-82 + 40, 0.5, -148 + 34.7) });
   add(make('fl-note fl-entry', arrowSvg('M88 14 C 60 6, 30 30, 10 88', 'M2 74 L10 90 L22 78') + '<span class="fl-text" data-t="entry"></span>'),
     new THREE.Vector3(-22, 0.5, -86), 0.06, 0.42);
-  add(make('fl-note fl-main', arrowSvg('M90 12 C 62 4, 30 26, 12 86', 'M4 72 L12 88 L24 76') + '<span class="fl-text" data-t="main"></span>'),
-    new THREE.Vector3(T.main[0], 17, -T.main[1]), 0.24, 0.6, { building: { h: 17, delay: 0.05 } });
+  // note « bâtiment historique » : seulement si ce n'est pas déjà la destination
+  if (T.main && (T.main[0] !== T.target[0] || T.main[1] !== T.target[1]))
+    add(make('fl-note fl-main', arrowSvg('M90 12 C 62 4, 30 26, 12 86', 'M4 72 L12 88 L24 76') + '<span class="fl-text" data-t="main"></span>'),
+      new THREE.Vector3(T.main[0], 17, -T.main[1]), 0.24, 0.6, { building: { h: 17, delay: 0.05 } });
   add(make('fl-note fl-target', arrowSvg('M92 10 C 66 2, 26 22, 10 86', 'M2 70 L10 88 L24 76', 'fl-arrow-big') +
     '<span class="fl-text"><em data-t="here"></em> <b data-t="target"></b></span>'),
-    new THREE.Vector3(T.target[0] + 6, 11.5, -T.target[1] - 6), 0.79, 2, { building: { h: 11.5, delay: 0.05 }, big: true });
+    new THREE.Vector3(TIP[0], TIP[2], -TIP[1]), 0.79, 2, { building: { h: TIP[2], delay: 0.05 }, big: true });
   return list;
 }
 

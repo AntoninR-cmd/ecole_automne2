@@ -30,14 +30,14 @@ en tête de `style.css` (encre, orange Institut Agro, vert d’eau).
 Une maquette 3D du quartier, générée à partir des emprises OpenStreetMap, est dessinée comme
 dans un carnet : contours à l’encre légèrement tremblés, hachures sur les faces à l’ombre,
 ombres portées hachurées, pelouses en pointillés, quadrillage du papier en perspective.
-Le défilement fait descendre la caméra du plan vu de dessus jusqu’au **bâtiment 24 (salle D4)**,
+Le défilement fait descendre la caméra du plan vu de dessus jusqu’au **bâtiment 11 (Amphi Moule)**,
 surligné en orange ; les bâtiments « poussent » pendant la descente.
 
 - Trajectoire : tableaux `PATH_WIDE` (écran large) et `PATH_TALL` (portrait) en tête de
   `js/campus3d.js` — une ligne par étape : avancement, point visé, distance, inclinaison, cap.
-- Annotations manuscrites (rue, entrée, bât. 11, bât. 24) : fonction `buildLabels`.
+- Annotations manuscrites (rue, entrée, bât. 11 (Amphi Moule)) : fonction `buildLabels`.
 - Résistance en fin de vol : `HOLD` (`app.js`, section 3) = part finale du défilement pendant
-  laquelle la vue reste sur le bâtiment 24 ; le défilement s’y accroche (`scroll-snap`, proximité).
+  laquelle la vue reste sur le bâtiment 11 ; le défilement s’y accroche (`scroll-snap`, proximité).
 - Sans WebGL 2, l’image `assets/vol-plan.webp` reste affichée.
 
 Pour régénérer les données après une mise à jour d’OpenStreetMap :
@@ -62,13 +62,13 @@ Chaque carte reste épinglée au centre pendant `--dwell` de défilement (`.talk
 
 ## Données
 
-Date (20 novembre 2026, 13h30 – 16h30), salle (D4, bâtiment 24) et créneaux de 20 minutes
+Date (20 novembre 2026, 13h30 – 16h30), salle (Amphi Moule, bâtiment 11) et créneaux de 20 minutes
 sont renseignés dans `data.js`. L’ordre du tableau `talks` est l’ordre affiché.
 Il reste à compléter `summary.fr` / `summary.en` pour chaque conférence : la mention
 « Les résumés seront publiés prochainement » disparaît quand tous sont remplis.
 
-Le plan du campus est `assets/plan-campus.png`. Le repère du bâtiment 24 est positionné en
-pourcentage dans `style.css` (`.map-marker { left: 76.1%; top: 44.4%; }`).
+Le plan du campus est `assets/plan-campus.png`. Le repère du bâtiment 11 est positionné en
+pourcentage dans `style.css` (`.map-marker { left: 47.9%; top: 61%; }`).
 
 ## Tester en local
 
