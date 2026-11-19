@@ -707,8 +707,9 @@ function buildLabels(world) {
   const T = world.marks;
   add(make('fl-street', '<span data-t="street"></span>'), new THREE.Vector3(-82, 0.5, -148), -1, 0.4,
     { dir: new THREE.Vector3(-82 + 40, 0.5, -148 + 34.7) });
+  // entrée : le petit bâtiment au bord de la rue, à droite du bât. 11 · [x est, y nord] = [61, 10.6], 6,5 m de haut
   add(make('fl-note fl-entry', arrowSvg('M88 14 C 60 6, 30 30, 10 88', 'M2 74 L10 90 L22 78') + '<span class="fl-text" data-t="entry"></span>'),
-    new THREE.Vector3(-22, 0.5, -86), 0.06, 0.42);
+    new THREE.Vector3(61, 6.5, -10.6), 0.06, 0.42, { building: { h: 6.5, delay: 0.05 } });
   // note « bâtiment historique » : seulement si ce n'est pas déjà la destination
   if (T.main && (T.main[0] !== T.target[0] || T.main[1] !== T.target[1]))
     add(make('fl-note fl-main', arrowSvg('M90 12 C 62 4, 30 26, 12 86', 'M4 72 L12 88 L24 76') + '<span class="fl-text" data-t="main"></span>'),
