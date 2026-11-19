@@ -727,7 +727,8 @@ async function start() {
   renderer.autoClear = true;
   renderer.setClearColor(new THREE.Color().setRGB(...COL.paper, THREE.SRGBColorSpace), 0);
 
-  const res = await fetch('assets/campus.json');
+  // ?v= : à changer à chaque modification de campus.json (les fichiers de assets/ sont gardés en cache un jour)
+  const res = await fetch('assets/campus.json?v=2');
   if (!res.ok) throw new Error('campus.json ' + res.status);
   const data = await res.json();
   const C = data.center;
